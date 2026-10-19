@@ -526,7 +526,7 @@
         const j = await r.json().catch(() => ({}));
         if (r.ok && String(j.success) === "true") {
           form.reset();
-          say(`<i class="ph ph-check-circle"></i><span><strong>Thanks — we got it.</strong> We'll reply to your email within a few days.</span>`, "ok");
+          say(`<i class="ph ph-check-circle"></i><span><strong>Thanks — we got it.</strong> ${esc(form.dataset.success || "We'll reply to your email within a few days.")}</span>`, "ok");
         } else if (/activat/i.test(j.message || "")) {
           say(`<i class="ph ph-info"></i><span>This form is being set up and isn't sending yet. Please email <a href="mailto:${LINKS.email1}">${LINKS.email1}</a> for now.</span>`, "warn");
         } else throw new Error(j.message || "Send failed");
