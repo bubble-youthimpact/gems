@@ -167,7 +167,7 @@
       <div class="inner">
         <h3 class="display-m">${esc(e.title)}</h3>
         <p class="body">${esc(e.text)}</p>
-        <div class="views">${plural(e.views, "view")}</div>
+        <div class="views" data-stat="lab-${esc(e.slug)}" data-base="${+e.views || 0}" data-word="play">${plural(e.views || 0, "play")}</div>
       </div>
     </a>`;
 
@@ -178,7 +178,7 @@
       <p class="body">${esc(e.text)}</p>
       <div class="ep-play">
         <a href="${watchUrl("podcast", e)}"><i class="ph ph-play"></i>PLAY</a>
-        <span class="views">${plural(e.views, "view")}</span>
+        <span class="views" data-stat="podcast-${esc(e.slug)}" data-base="${+e.views || 0}" data-word="play">${plural(e.views || 0, "play")}</span>
       </div>
     </article>`;
 
@@ -780,6 +780,17 @@
     });
   }
 
+  /* Live play counts: the number in data.js (carried over from the old site) plus plays counted here */
+  const fillStats = () => {
+    const els = document.querySelectorAll("[data-stat]");
+    if (!els.length || !B || B.mode === "off") return;
+    B.getStats().then(stats => els.forEach(el => {
+      const st = stats[el.dataset.stat] || {}, key = el.dataset.field || "plays";
+      el.textContent = plural((+el.dataset.base || 0) + (st[key] || 0), el.dataset.word);
+    })).catch(() => {});
+  };
+  fillStats();
+
   /* Shared helpers for page scripts (watch.js) */
-  window.GEMS_UTIL = { u, esc, plural, embed, openModal, closeModals, watchUrl };
+  window.GEMS_UTIL = { u, esc, plural, embed, openModal, closeModals, watchUrl, fillStats };
 })();

@@ -32,6 +32,8 @@
     resetPassword: async () => { throw new Error("Accounts aren't connected yet."); },
     signOut: async () => {},
     updateName: async () => { throw new Error("Accounts aren't connected yet."); },
+    recordPlay: async () => {},                 // counts a play (and a new student) for a video/episode
+    getStats: async () => ({}),                 // { "lab-slug": { plays, students }, ... }
     watchComments: (_target, cb) => { cb([]); return () => {}; },
     addComment: async () => { throw new Error("Comments aren't connected yet."); },
     deleteComment: async () => { throw new Error("Comments aren't connected yet."); }
@@ -93,6 +95,14 @@
         if (accts[email]) { accts[email].name = name; store.set("gems-demo-accounts", accts); }
         const u = { ...currentUser, name }; store.set("gems-demo-user", u); setUser(u);
       },
+      async recordPlay(target) {
+        if (!currentUser) return;
+        const stats = store.get("gems-demo-stats", {}), seen = store.get("gems-demo-views", {});
+        const key = target + "__" + currentUser.uid, s0 = stats[target] || { plays: 0, students: 0 };
+        stats[target] = { plays: s0.plays + 1, students: s0.students + (seen[key] ? 0 : 1) };
+        seen[key] = true; store.set("gems-demo-views", seen); store.set("gems-demo-stats", stats);
+      },
+      async getStats() { return store.get("gems-demo-stats", {}); },
       watchComments(target, cb) {
         if (!watchers.has(target)) watchers.set(target, new Set());
         watchers.get(target).add(cb); emit(target);
@@ -199,6 +209,26 @@
         name = checkName(name);
         try { await A.updateProfile(auth.currentUser, { displayName: name }); } catch (e) { throw friendly(e); }
         setUser({ uid: auth.currentUser.uid, name });
+      },
+      /* Plays and unique students. One private "views" record per person per item
+         (views/<target>__<uid>) decides whether they're new; stats/<target> holds the totals.
+         firestore.rules checks every change, so totals can only ever go up by one. */
+      async recordPlay(target) {
+        const { F, db, auth } = await ready;
+        const user = auth.currentUser; if (!user) return;
+        const viewRef = F.doc(db, "views", target + "__" + user.uid), statRef = F.doc(db, "stats", target);
+        await F.runTransaction(db, async tx => {
+          const [v, st] = [await tx.get(viewRef), await tx.get(statRef)];
+          const cur = st.exists() ? st.data() : { plays: 0, students: 0 }, isNew = !v.exists();
+          if (isNew) tx.set(viewRef, { target, uid: user.uid, at: F.serverTimestamp() });
+          tx.set(statRef, { plays: (cur.plays || 0) + 1, students: (cur.students || 0) + (isNew ? 1 : 0) });
+        });
+      },
+      async getStats() {
+        const { F, db } = await ready;
+        const snap = await F.getDocs(F.collection(db, "stats")), out = {};
+        snap.forEach(d => { out[d.id] = d.data(); });
+        return out;
       },
       watchComments(target, cb) {
         let unsub = () => {};

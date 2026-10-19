@@ -7,7 +7,7 @@
 (function () {
   const D = window.GEMS_DATA || {};
   const B = window.GEMS_BACKEND;
-  const { u, esc, plural, embed, watchUrl } = window.GEMS_UTIL;
+  const { u, esc, plural, embed, watchUrl, fillStats } = window.GEMS_UTIL;
   const root = document.getElementById("watch");
   let unsubscribe = () => {}, unAuth = () => {};
 
@@ -64,8 +64,8 @@
         <p class="body watch-lede">${esc(item.text)}</p>
         <div class="watch-player" id="player"></div>
         <div class="watch-meta">
-          <span class="chip">${plural(item.views || 0, "play")}</span>
-          <span class="chip">${plural(item.students || 0, "student")}</span>
+          <span class="chip" data-stat="${target}" data-field="plays" data-base="${+item.views || 0}" data-word="play">${plural(item.views || 0, "play")}</span>
+          <span class="chip" data-stat="${target}" data-field="students" data-base="${+item.students || 0}" data-word="student">${plural(item.students || 0, "student")}</span>
           <span id="open-link"></span>
         </div>
       </section>
@@ -100,9 +100,19 @@
         return;
       }
       player.innerHTML = embed(url && !/^https?:/.test(url) ? u(url) : url);
+      countPlay();
       openLink.innerHTML = /^https?:/.test(url || "")
         ? `<a class="text-link" href="${esc(url)}" target="_blank" rel="noopener">Open in a new tab<i class="ph ph-arrow-up-right"></i></a>` : "";
     };
+
+    /* Count one play per browser session per item, only for signed-in members (the player is locked otherwise) */
+    const countPlay = () => {
+      if (!B || B.mode === "off" || !B.user) return;
+      const key = "gems-played:" + target + ":" + B.user.uid;
+      try { if (sessionStorage.getItem(key)) return fillStats(); sessionStorage.setItem(key, "1"); } catch {}
+      B.recordPlay(target).catch(() => {}).finally(fillStats);
+    };
+    fillStats();
 
     const composer = document.getElementById("composer");
     const listEl = document.getElementById("comment-list");
