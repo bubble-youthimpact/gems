@@ -430,7 +430,18 @@
         <div class="eyebrow">Your account</div>
         <h2 class="display-m" id="account-title"></h2>
         <p class="body">You can comment on podcast episodes and GEMS Lab experiments, and delete your own comments.</p>
-        <button class="btn btn-dark shadow-pink" id="signout-btn" style="margin-top:24px">Sign out</button>
+        <form class="name-form" id="name-form" novalidate>
+          <div class="field auth-field">
+            <label for="acct-name">Display name</label>
+            <div class="name-row">
+              <input id="acct-name" type="text" maxlength="40" autocomplete="nickname" required>
+              <button class="btn btn-pink shadow-ink" type="submit" data-busy="Saving…">Save</button>
+            </div>
+            <p class="name-help">Shown next to your comments.</p>
+          </div>
+          <p class="form-status" id="name-status" role="status" aria-live="polite" hidden></p>
+        </form>
+        <button class="btn btn-dark shadow-pink" id="signout-btn" style="margin-top:8px">Sign out</button>
       </div>
     </div>
     <div class="modal" id="modal-media" role="dialog" aria-modal="true">
@@ -693,6 +704,24 @@
 
   document.getElementById("signout-btn").addEventListener("click", async () => { await B.signOut(); closeModals(); });
 
+  /* Account: change display name */
+  const nameForm = document.getElementById("name-form"), nameInput = document.getElementById("acct-name"), nameStatus = document.getElementById("name-status");
+  const nameSay = (msg, kind) => { nameStatus.className = "form-status " + kind; nameStatus.innerHTML = msg; nameStatus.hidden = !msg; };
+  nameInput.addEventListener("input", () => nameSay("", "info"));
+  document.addEventListener("click", e => {          // fresh form every time the account window opens
+    if (e.target.closest('[data-open="account"]')) { nameSay("", "info"); if (B.user) nameInput.value = B.user.name || ""; }
+  }, true);
+  nameForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = nameForm.querySelector('[type="submit"]'), name = nameInput.value.trim();
+    if (!name) { nameSay(`<i class="ph ph-warning-circle"></i><span>Enter a name first.</span>`, "err"); nameInput.focus(); return; }
+    if (B.user && name === B.user.name) { nameSay(`<i class="ph ph-check-circle"></i><span>That's already your name.</span>`, "ok"); return; }
+    setBusy(btn, true);
+    try { await B.updateName(name); nameSay(`<i class="ph ph-check-circle"></i><span>Saved. New comments will show this name.</span>`, "ok"); }
+    catch (err) { nameSay(`<i class="ph ph-warning-circle"></i><span>${esc(err.message || "Couldn't save. Please try again.")}</span>`, "err"); }
+    setBusy(btn, false);
+  });
+
   if (B) B.onAuth(user => {
     if (user && document.getElementById("modal-signin").classList.contains("open")) closeModals();
     document.querySelectorAll(".js-account").forEach(b => {
@@ -708,6 +737,7 @@
       }
     });
     document.getElementById("account-title").textContent = user ? "Hi, " + user.name + "." : "";
+    if (user && document.activeElement !== nameInput) nameInput.value = user.name || "";
   });
 
   /* Testimonials viewer */

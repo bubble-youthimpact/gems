@@ -31,6 +31,7 @@
     signInWithGoogle: async () => { throw new Error("Accounts aren't connected yet."); },
     resetPassword: async () => { throw new Error("Accounts aren't connected yet."); },
     signOut: async () => {},
+    updateName: async () => { throw new Error("Accounts aren't connected yet."); },
     watchComments: (_target, cb) => { cb([]); return () => {}; },
     addComment: async () => { throw new Error("Comments aren't connected yet."); },
     deleteComment: async () => { throw new Error("Comments aren't connected yet."); }
@@ -39,6 +40,7 @@
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const checkEmail = e => { e = String(e || "").trim(); if (!EMAIL.test(e)) throw new Error("Enter a valid email address."); return e; };
   const checkPass = p => { if (String(p || "").length < 6) throw new Error("Use a password with at least 6 characters."); return p; };
+  const checkName = n => { n = String(n || "").trim().slice(0, 40); if (!n) throw new Error("Enter a name first."); return n; };
   const clean = t => String(t || "").replace(/\r\n/g, "\n").trim().slice(0, MAX);
 
   /* ---------------- Demo engine (preview only) ---------------- */
@@ -84,6 +86,13 @@
         await new Promise(r => setTimeout(r, 500));      // pretend to send the email
       },
       async signOut() { try { localStorage.removeItem("gems-demo-user"); } catch {} setUser(null); },
+      async updateName(name) {
+        if (!currentUser) throw new Error("Sign in first.");
+        name = checkName(name);
+        const email = currentUser.uid.replace(/^demo-/, ""), accts = store.get("gems-demo-accounts", {});
+        if (accts[email]) { accts[email].name = name; store.set("gems-demo-accounts", accts); }
+        const u = { ...currentUser, name }; store.set("gems-demo-user", u); setUser(u);
+      },
       watchComments(target, cb) {
         if (!watchers.has(target)) watchers.set(target, new Set());
         watchers.get(target).add(cb); emit(target);
@@ -184,6 +193,13 @@
         }
       },
       async signOut() { const { A, auth } = await ready; await A.signOut(auth); },
+      async updateName(name) {
+        const { A, auth } = await ready;
+        if (!auth.currentUser) throw new Error("Sign in first.");
+        name = checkName(name);
+        try { await A.updateProfile(auth.currentUser, { displayName: name }); } catch (e) { throw friendly(e); }
+        setUser({ uid: auth.currentUser.uid, name });
+      },
       watchComments(target, cb) {
         let unsub = () => {};
         ready.catch(() => cb(null));            // Firebase couldn't load (offline or blocked network)
