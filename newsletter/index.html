@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Newsletter · GEMS</title>
+  <meta name="description" content="Field briefings: short dispatches from where GEMS is working, what we ran, and who we ran it with.">
+  <meta property="og:title" content="Newsletter · GEMS">
+  <meta property="og:image" content="https://gems-jk.org/assets/img/og-image.png">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/vendor/phosphor/style.css">
+</head>
+<body data-page="newsletter">
+<main>
+
+  <section class="page-hero ruled-below">
+    <div class="eyebrow">Newsletter</div>
+    <h1 class="display-xl">Field <span class="pink">briefings</span>.</h1>
+    <p class="lead" style="max-width:900px;margin-top:40px">Short dispatches from where GEMS is working, what we ran, and who we ran it with.</p>
+  </section>
+
+  <section class="section rule-top wrap">
+    <div class="briefings" data-render="briefings"></div>
+  </section>
+
+  <section class="section rule-top wrap subscribe">
+    <div>
+      <div class="eyebrow">Subscribe</div>
+      <h2 class="display-l" style="margin-top:21px">Get the next briefing.</h2>
+    </div>
+    <form class="subscribe-form" data-form="newsletter">
+      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
+      <button type="submit">SUBSCRIBE</button>
+      <p class="form-note" hidden>Thanks! Sign-ups will be saved once the newsletter list is connected.</p>
+    </form>
+  </section>
+
+</main>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/firebase-config.js"></script>
+<script src="../assets/js/backend.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

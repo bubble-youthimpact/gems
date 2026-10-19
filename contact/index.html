@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact · GEMS</title>
+  <meta name="description" content="Say hi. We listen. Contact GEMS about tutoring, volunteering, the Hidden GEMS podcast, leadership, or partnerships.">
+  <meta property="og:title" content="Contact · GEMS">
+  <meta property="og:image" content="https://gems-jk.org/assets/img/og-image.png">
+  <link rel="icon" href="../assets/img/favicon.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/vendor/phosphor/style.css">
+</head>
+<body data-page="contact">
+<main>
+
+  <section class="page-hero ruled-below">
+    <div class="eyebrow">Contact</div>
+    <h1 class="display-xl">Say hi.<br>We <span class="pink">listen.</span></h1>
+  </section>
+
+  <section class="section rule-top wrap contact-grid">
+    <form data-formsubmit="New message from gems-jk.org" novalidate>
+      <div class="form-row">
+        <div class="field"><label for="c-name">Name</label><input id="c-name" name="name" autocomplete="name" required></div>
+        <div class="field"><label for="c-email">Email</label><input id="c-email" name="email" type="email" autocomplete="email" required></div>
+      </div>
+      <div class="field">
+        <label for="c-topic">I'd like to...</label>
+        <select id="c-topic" name="topic" required>
+          <option value="" selected disabled hidden>Select one</option>
+          <option>Become a tutor</option>
+          <option>Volunteer in-person</option>
+          <option data-key="guest">Be or suggest a Hidden GEMS guest</option>
+          <option data-key="workshop">Host a workshop</option>
+          <option data-key="opal">Request OPAL copies</option>
+          <option data-key="lab">Partner with GEMS Lab</option>
+          <option>Join division leadership</option>
+          <option data-key="partner">Partnership inquiry</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea></div>
+      <button class="btn btn-pink shadow-ink" type="submit">Send message<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      <p class="form-status" role="status" aria-live="polite" hidden></p>
+    </form>
+
+    <div class="info-stack">
+      <div class="card bg-ink">
+        <div class="footer-h">Email us</div>
+        <a class="info-line" href="mailto:info@gems-stem.org"><i class="ion ion-mail"></i>info@gems-stem.org</a>
+        <a class="info-line" href="mailto:j2kim2027@chadwickschool.org"><i class="ion ion-mail"></i>j2kim2027@chadwickschool.org</a>
+      </div>
+      <div class="card bg-pink">
+        <div class="footer-h" style="color:var(--cream)">Visit our social media</div>
+        <a class="info-line" href="https://www.instagram.com/gems_forall/" target="_blank" rel="noopener"><i class="ph ph-instagram-logo"></i>Instagram · @gems_forall</a>
+        <a class="info-line" href="https://www.tiktok.com/@gems_forall" target="_blank" rel="noopener"><i class="ph ph-tiktok-logo"></i>TikTok · @gems_forall</a>
+      </div>
+      <div class="card">
+        <div class="footer-h" style="color:var(--pink)">Based in</div>
+        <p class="body-20">Chadwick International School<br>Songdo, Incheon — South Korea</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/firebase-config.js"></script>
+<script src="../assets/js/backend.js"></script>
+<script src="../assets/js/site.js"></script>
+</body>
+</html>

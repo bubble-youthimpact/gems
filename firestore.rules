@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// GEMS comments.
+// Paste into Firebase console → Firestore Database → Rules → Publish.
+//
+// - Anyone can read comments.
+// - Only signed-in people can post, only as themselves, with 1–2000 characters.
+// - People can delete only their own comments. Nobody can edit a comment.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /comments/{commentId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['target', 'text', 'uid', 'name', 'createdAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000
+        && request.resource.data.name is string
+        && request.resource.data.name.size() <= 40
+        && request.resource.data.target is string
+        && request.resource.data.target.matches('^(podcast|lab)-[a-z0-9-]+$')
+        && request.resource.data.createdAt == request.time;
+
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+
+      allow update: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
