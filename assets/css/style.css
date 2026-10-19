@@ -26,7 +26,8 @@
   --f-sans: "DM Sans", Helvetica, Arial, sans-serif;
   --f-serif: "Fraunces", Georgia, serif;
 
-  --gutter: 20px;
+  --site-max: 2000px;     /* content never gets wider than this; backgrounds still fill the screen */
+  --gutter: max(20px, calc((100vw - var(--site-max)) / 2 + 20px));
   --header-h: 89px;
 
   /* Fluid type: each hits the original Bubble size at 1440px wide */
