@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// GEMS comments.
+// GEMS comments and play counts.
 // Paste into Firebase console → Firestore Database → Rules → Publish.
 //
 // - Anyone can read comments.
@@ -28,6 +28,52 @@ service cloud.firestore {
         && resource.data.uid == request.auth.uid;
 
       allow update: if false;
+    }
+
+    // Play counts. One private record per person per video/episode (views/<target>__<uid>)
+    // decides whether they count as a new student. Totals live in stats/<target>,
+    // anyone can read them, and each change may only add 1 play (and 1 student
+    // the first time that person plays it).
+    match /views/{viewId} {
+      allow get: if request.auth != null
+        && viewId.split('__').size() == 2
+        && viewId.split('__')[1] == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['target', 'uid', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.target is string
+        && request.resource.data.target.matches('^(podcast|lab)-[a-z0-9-]+$')
+        && viewId == request.resource.data.target + '__' + request.auth.uid
+        && request.resource.data.at == request.time;
+
+      allow list, update, delete: if false;
+    }
+
+    match /stats/{target} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && target.matches('^(podcast|lab)-[a-z0-9-]+$')
+        && request.resource.data.keys().hasOnly(['plays', 'students'])
+        && request.resource.data.plays == 1
+        && request.resource.data.students == 1
+        && !exists(/databases/$(database)/documents/views/$(target + '__' + request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/views/$(target + '__' + request.auth.uid));
+
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['plays', 'students'])
+        && request.resource.data.plays == resource.data.plays + 1
+        && (
+          (request.resource.data.students == resource.data.students
+            && exists(/databases/$(database)/documents/views/$(target + '__' + request.auth.uid)))
+          ||
+          (request.resource.data.students == resource.data.students + 1
+            && !exists(/databases/$(database)/documents/views/$(target + '__' + request.auth.uid))
+            && existsAfter(/databases/$(database)/documents/views/$(target + '__' + request.auth.uid)))
+        );
+
+      allow delete: if false;
     }
 
     // Everything else is closed.
