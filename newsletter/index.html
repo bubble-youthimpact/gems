@@ -29,10 +29,14 @@
       <div class="eyebrow">Subscribe</div>
       <h2 class="display-l" style="margin-top:21px">Get the next briefing.</h2>
     </div>
-    <form class="subscribe-form" data-form="newsletter">
-      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address">
+    <form class="subscribe-form" method="post" action="https://formsubmit.co/bubble.youthimpact@gmail.com"
+          data-formsubmit="New newsletter sign-up from gems-jk.org"
+          data-success="You're on the list. We'll email you when the next briefing is out.">
+      <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" autocomplete="email">
+      <input type="hidden" name="signup" value="Newsletter">
+      <input type="text" name="_honey" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="submit">SUBSCRIBE</button>
-      <p class="form-note" hidden>Thanks! Sign-ups will be saved once the newsletter list is connected.</p>
+      <p class="form-status" role="status" aria-live="polite" hidden></p>
     </form>
   </section>
 
