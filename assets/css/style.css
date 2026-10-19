@@ -1312,3 +1312,16 @@ body.lb-open { overflow: hidden; }
   .t-school:not(.show-all) .t-tile:nth-child(3) { display: none; }
   .t-more-narrow { display: inline-flex; }
 }
+/* Account window: edit display name */
+.name-form { margin-top: 26px; padding-top: 22px; border-top: 1px solid rgba(26,26,26,.15); }
+.name-form .auth-field { margin-bottom: 0; }
+.name-row { display: flex; gap: 10px; }
+.name-row input { flex: 1; min-width: 0; }
+.name-row .btn { height: 50px; flex-shrink: 0; padding: 0 20px; }
+.name-help { margin-top: 8px; font: 400 14px/1.4 var(--f-sans); color: #5f5b53; }
+.name-form .form-status { margin-top: 12px; }
+@media (max-width: 380px) { .name-row { flex-direction: column; } .name-row .btn { justify-content: center; } }
+.modal-box .name-row .btn { width: auto; }
+.name-row input { height: 50px; background: var(--white); font-size: 16px; }
+@media (max-width: 380px) { .modal-box .name-row .btn { width: 100%; } }
+@media (max-width: 380px) { .name-row input { flex: none; } }
