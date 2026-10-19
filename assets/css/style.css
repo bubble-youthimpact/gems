@@ -1325,3 +1325,4 @@ body.lb-open { overflow: hidden; }
 .name-row input { height: 50px; background: var(--white); font-size: 16px; }
 @media (max-width: 380px) { .modal-box .name-row .btn { width: 100%; } }
 @media (max-width: 380px) { .name-row input { flex: none; } }
+.subscribe-form .form-status { flex-basis: 100%; }
