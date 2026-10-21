@@ -348,7 +348,7 @@
     const counts = [nP && plural(nP, "photo"), nV && plural(nV, "video")].filter(Boolean).join(" · ");
     return `<section class="section rule-top wrap t-school" id="school-${t.school}">
       <div class="t-head">
-        <div><div class="eyebrow ink">${String(si + 1).padStart(2, "0")} · Testimonials</div><h2 class="display-m">${esc(t.name || "School " + t.school)}</h2></div>
+        <div><div class="eyebrow ink">${String(si + 1).padStart(2, "0")} · Testimonials</div><h2 class="display-m">${esc(t.name || "School " + t.school)}</h2>${t.place ? `<p class="t-place"><i class="ph ph-map-pin"></i>${esc(t.place)}, Rwanda</p>` : ""}</div>
         ${media.length ? `<span class="t-count">${counts}</span>` : `<span class="sticker bg-orange">Coming soon</span>`}
       </div>
       ${media.length ? `<div class="t-grid">${media.map((m, mi) => tTile(m, si, mi)).join("")}</div>

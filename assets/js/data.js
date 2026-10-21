@@ -23,13 +23,15 @@ window.GEMS_DATA = {
      image:    thumbnail in assets/img/lab/
      video:    a Google Drive share link, a YouTube link, or a video file path */
   /* Testimonials page: one entry per school, shown in this order.
-     name:  the heading — change "School 1" to the real school name any time
+     name:  the school's name (the heading)
+     place: shown under the name, e.g. "Gasabo District"
      media: photos and videos in assets/testimonials/school-NN/ (shown in this order;
             reorder or delete lines freely). An empty list shows "Coming soon" tiles. */
   testimonials: [
     {
       "school": 1,
-      "name": "School 1",
+      "name": "Lycée de Kigali (LDK)",
+      "place": "Nyarugenge District",
       "media": [
         {"type": "photo", "src": "school-01/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-01/video-1.mp4", "poster": "school-01/video-1.webp", "duration": 7, "w": 540, "h": 960},
@@ -43,7 +45,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 2,
-      "name": "School 2",
+      "name": "Saint Ignatius High School",
+      "place": "Gasabo District",
       "media": [
         {"type": "photo", "src": "school-02/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-02/video-1.mp4", "poster": "school-02/video-1.webp", "duration": 8, "w": 540, "h": 960},
@@ -58,7 +61,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 3,
-      "name": "School 3",
+      "name": "Glory Secondary School",
+      "place": "Gasabo District",
       "media": [
         {"type": "photo", "src": "school-03/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-03/video-1.mp4", "poster": "school-03/video-1.webp", "duration": 20, "w": 540, "h": 960},
@@ -77,7 +81,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 4,
-      "name": "School 4",
+      "name": "APADE Lycée de Kicukiro",
+      "place": "Kicukiro District",
       "media": [
         {"type": "photo", "src": "school-04/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-04/video-1.mp4", "poster": "school-04/video-1.webp", "duration": 13, "w": 540, "h": 960},
@@ -87,7 +92,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 5,
-      "name": "School 5",
+      "name": "Green Hills Academy",
+      "place": "Gasabo District",
       "media": [
         {"type": "photo", "src": "school-05/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-05/video-1.mp4", "poster": "school-05/video-1.webp", "duration": 9, "w": 540, "h": 960},
@@ -99,7 +105,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 6,
-      "name": "School 6",
+      "name": "King David Academy",
+      "place": "Kicukiro District",
       "media": [
         {"type": "photo", "src": "school-06/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-06/video-1.mp4", "poster": "school-06/video-1.webp", "duration": 20, "w": 540, "h": 960},
@@ -113,7 +120,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 7,
-      "name": "School 7",
+      "name": "Lycée Notre Dame de Cîteaux",
+      "place": "Nyarugenge District",
       "media": [
         {"type": "photo", "src": "school-07/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-07/video-1.mp4", "poster": "school-07/video-1.webp", "duration": 31, "w": 540, "h": 960},
@@ -126,7 +134,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 8,
-      "name": "School 8",
+      "name": "FAWE Girls' School",
+      "place": "Gasabo District",
       "media": [
         {"type": "photo", "src": "school-08/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-08/video-1.mp4", "poster": "school-08/video-1.webp", "duration": 20, "w": 540, "h": 960},
@@ -137,7 +146,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 9,
-      "name": "School 9",
+      "name": "Collège Saint André",
+      "place": "Nyarugenge District",
       "media": [
         {"type": "photo", "src": "school-09/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-09/video-1.mp4", "poster": "school-09/video-1.webp", "duration": 18, "w": 402, "h": 720},
@@ -147,7 +157,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 10,
-      "name": "School 10",
+      "name": "IFAK Kimihurura (Institut de Formation Apostolique de Kimihurura)",
+      "place": "Gasabo District",
       "media": [
         {"type": "photo", "src": "school-10/photo-1.webp", "w": 788, "h": 1400},
         {"type": "photo", "src": "school-10/photo-2.webp", "w": 788, "h": 1400},
@@ -157,7 +168,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 11,
-      "name": "School 11",
+      "name": "Nyamata High School",
+      "place": "Bugesera District",
       "media": [
         {"type": "photo", "src": "school-11/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-11/video-1.mp4", "poster": "school-11/video-1.webp", "duration": 6, "w": 540, "h": 960},
@@ -169,7 +181,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 12,
-      "name": "School 12",
+      "name": "École Technique St. Kizito Musha",
+      "place": "Rwamagana District",
       "media": [
         {"type": "photo", "src": "school-12/photo-1.webp", "w": 788, "h": 1400},
         {"type": "video", "src": "school-12/video-1.mp4", "poster": "school-12/video-1.webp", "duration": 14, "w": 540, "h": 960},
@@ -181,7 +194,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 13,
-      "name": "School 13",
+      "name": "Orpcare School",
+      "place": "Kayonza District",
       "media": [
         {"type": "photo", "src": "school-13/photo-1.webp", "w": 787, "h": 1400},
         {"type": "video", "src": "school-13/video-1.mp4", "poster": "school-13/video-1.webp", "duration": 42, "w": 406, "h": 720},
@@ -194,7 +208,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 14,
-      "name": "School 14",
+      "name": "St. Antoine Secondary School Karangazi",
+      "place": "Nyagatare District",
       "media": [
         {"type": "photo", "src": "school-14/photo-1.webp", "w": 787, "h": 1400},
         {"type": "video", "src": "school-14/video-1.mp4", "poster": "school-14/video-1.webp", "duration": 31, "w": 406, "h": 720},
@@ -203,14 +218,16 @@ window.GEMS_DATA = {
     },
     {
       "school": 15,
-      "name": "School 15",
+      "name": "G.S. Rubira",
+      "place": "Kayonza District",
       "media": [
         {"type": "video", "src": "school-15/video-1.mp4", "poster": "school-15/video-1.webp", "duration": 17, "w": 540, "h": 960}
       ]
     },
     {
       "school": 16,
-      "name": "School 16",
+      "name": "Lycée de Zaza",
+      "place": "Ngoma District",
       "media": [
         {"type": "photo", "src": "school-16/photo-1.webp", "w": 787, "h": 1400},
         {"type": "video", "src": "school-16/video-1.mp4", "poster": "school-16/video-1.webp", "duration": 10, "w": 406, "h": 720},
@@ -220,7 +237,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 17,
-      "name": "School 17",
+      "name": "Rwamagana Lutheran School",
+      "place": "Rwamagana District",
       "media": [
         {"type": "video", "src": "school-17/video-1.mp4", "poster": "school-17/video-1.webp", "duration": 10, "w": 406, "h": 720},
         {"type": "video", "src": "school-17/video-2.mp4", "poster": "school-17/video-2.webp", "duration": 34, "w": 406, "h": 720},
@@ -231,7 +249,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 18,
-      "name": "School 18",
+      "name": "Akagera International School",
+      "place": "Kirehe District",
       "media": [
         {"type": "photo", "src": "school-18/photo-1.webp", "w": 787, "h": 1400},
         {"type": "video", "src": "school-18/video-1.mp4", "poster": "school-18/video-1.webp", "duration": 3, "w": 406, "h": 720},
@@ -241,7 +260,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 19,
-      "name": "School 19",
+      "name": "Kirehe TVET School",
+      "place": "Kirehe District",
       "media": [
         {"type": "photo", "src": "school-19/photo-1.webp", "w": 608, "h": 1080},
         {"type": "video", "src": "school-19/video-1.mp4", "poster": "school-19/video-1.webp", "duration": 8, "w": 406, "h": 720}
@@ -249,7 +269,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 20,
-      "name": "School 20",
+      "name": "Karenge Adventist Secondary School",
+      "place": "Rwamagana District",
       "media": [
         {"type": "photo", "src": "school-20/photo-1.webp", "w": 787, "h": 1400},
         {"type": "photo", "src": "school-20/photo-2.webp", "w": 787, "h": 1400}
@@ -257,7 +278,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 21,
-      "name": "School 21",
+      "name": "Groupe Scolaire Officiel de Butare (GSOB / Indatwa n'Inkesha)",
+      "place": "Huye District",
       "media": [
         {"type": "photo", "src": "school-21/photo-1.webp", "w": 787, "h": 1400},
         {"type": "photo", "src": "school-21/photo-2.webp", "w": 787, "h": 1400}
@@ -265,7 +287,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 22,
-      "name": "School 22",
+      "name": "École des Sciences Byimana",
+      "place": "Ruhango District",
       "media": [
         {"type": "photo", "src": "school-22/photo-1.webp", "w": 608, "h": 1080},
         {"type": "video", "src": "school-22/video-1.mp4", "poster": "school-22/video-1.webp", "duration": 56, "w": 402, "h": 720},
@@ -275,7 +298,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 23,
-      "name": "School 23",
+      "name": "École des Sciences Saint Louis de Montfort Nyanza",
+      "place": "Nyanza District",
       "media": [
         {"type": "video", "src": "school-23/video-1.mp4", "poster": "school-23/video-1.webp", "duration": 8, "w": 406, "h": 720},
         {"type": "video", "src": "school-23/video-2.mp4", "poster": "school-23/video-2.webp", "duration": 55, "w": 402, "h": 720},
@@ -284,7 +308,8 @@ window.GEMS_DATA = {
     },
     {
       "school": 24,
-      "name": "School 24",
+      "name": "École Notre Dame De La Providence Karubanda (ENDPK)",
+      "place": "Huye District",
       "media": [
         {"type": "video", "src": "school-24/video-1.mp4", "poster": "school-24/video-1.webp", "duration": 9, "w": 406, "h": 720},
         {"type": "video", "src": "school-24/video-2.mp4", "poster": "school-24/video-2.webp", "duration": 11, "w": 406, "h": 720},
