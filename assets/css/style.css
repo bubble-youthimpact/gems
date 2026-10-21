@@ -1326,3 +1326,6 @@ body.lb-open { overflow: hidden; }
 @media (max-width: 380px) { .modal-box .name-row .btn { width: 100%; } }
 @media (max-width: 380px) { .name-row input { flex: none; } }
 .subscribe-form .form-status { flex-basis: 100%; }
+.t-head .display-m { text-transform: none; }
+.t-place { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 400 16px/1.4 var(--f-serif); color: #3d3a35; }
+.t-place .ph { font-size: 16px; color: var(--pink); }
