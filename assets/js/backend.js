@@ -100,7 +100,9 @@
         const stats = store.get("gems-demo-stats", {}), seen = store.get("gems-demo-views", {});
         const key = target + "__" + currentUser.uid, s0 = stats[target] || { plays: 0, students: 0 };
         stats[target] = { plays: s0.plays + 1, students: s0.students + (seen[key] ? 0 : 1) };
-        seen[key] = true; store.set("gems-demo-views", seen); store.set("gems-demo-stats", stats);
+        const kind = target.split("-")[0], vKey = kind + "__" + currentUser.uid;     // different people across a whole series
+        if (!seen[vKey]) { const t = stats["totals/" + kind] || { students: 0 }; stats["totals/" + kind] = { students: t.students + 1 }; }
+        seen[key] = true; seen[vKey] = true; store.set("gems-demo-views", seen); store.set("gems-demo-stats", stats);
       },
       async getStats() { return store.get("gems-demo-stats", {}); },
       watchComments(target, cb) {
@@ -216,18 +218,25 @@
       async recordPlay(target) {
         const { F, db, auth } = await ready;
         const user = auth.currentUser; if (!user) return;
+        const kind = target.split("-")[0];                   // "lab" or "podcast"
         const viewRef = F.doc(db, "views", target + "__" + user.uid), statRef = F.doc(db, "stats", target);
+        const viewerRef = F.doc(db, "viewers", kind + "__" + user.uid), totalRef = F.doc(db, "totals", kind);
         await F.runTransaction(db, async tx => {
-          const [v, st] = [await tx.get(viewRef), await tx.get(statRef)];
-          const cur = st.exists() ? st.data() : { plays: 0, students: 0 }, isNew = !v.exists();
+          const [v, st, vw, tot] = [await tx.get(viewRef), await tx.get(statRef), await tx.get(viewerRef), await tx.get(totalRef)];
+          const cur = st.exists() ? st.data() : { plays: 0, students: 0 }, isNew = !v.exists(), isNewViewer = !vw.exists();
           if (isNew) tx.set(viewRef, { target, uid: user.uid, at: F.serverTimestamp() });
           tx.set(statRef, { plays: (cur.plays || 0) + 1, students: (cur.students || 0) + (isNew ? 1 : 0) });
+          if (isNewViewer) {                                   // first time this person plays anything in the series
+            tx.set(viewerRef, { uid: user.uid, at: F.serverTimestamp() });
+            tx.set(totalRef, { students: ((tot.exists() ? tot.data().students : 0) || 0) + 1 });
+          }
         });
       },
       async getStats() {
         const { F, db } = await ready;
-        const snap = await F.getDocs(F.collection(db, "stats")), out = {};
+        const [snap, tots] = await Promise.all([F.getDocs(F.collection(db, "stats")), F.getDocs(F.collection(db, "totals"))]), out = {};
         snap.forEach(d => { out[d.id] = d.data(); });
+        tots.forEach(d => { out["totals/" + d.id] = d.data(); });
         return out;
       },
       watchComments(target, cb) {

@@ -399,10 +399,10 @@
     a.href = D.opalAmazonUrl; a.classList.remove("btn-soon"); a.removeAttribute("aria-disabled");
     a.querySelector("span").textContent = "Get OPAL on Amazon";
   });
-  document.querySelectorAll("[data-stat]").forEach(el => {
-    const k = el.dataset.stat;
-    el.textContent = k === "experiments" ? (D.experiments || []).length : (D.labStats || {})[k] ?? 0;
-  });
+  /* Homepage GEMS Lab counters: experiments in the library, total plays, different students */
+  const LS = D.labStats || {};
+  const labStatBase = { experiments: (D.library || []).length, plays: +LS.plays || 0, students: +LS.studentViews || 0 };
+  document.querySelectorAll("[data-labstat]").forEach(el => { el.textContent = labStatBase[el.dataset.labstat] ?? 0; });
 
   /* ---------- Missing images show a labelled placeholder ---------- */
   const swapMissing = img => {
@@ -782,12 +782,17 @@
 
   /* Live play counts: the number in data.js (carried over from the old site) plus plays counted here */
   const fillStats = () => {
-    const els = document.querySelectorAll("[data-stat]");
-    if (!els.length || !B || B.mode === "off") return;
-    B.getStats().then(stats => els.forEach(el => {
-      const st = stats[el.dataset.stat] || {}, key = el.dataset.field || "plays";
-      el.textContent = plural((+el.dataset.base || 0) + (st[key] || 0), el.dataset.word);
-    })).catch(() => {});
+    const els = document.querySelectorAll("[data-stat]"), lab = document.querySelectorAll("[data-labstat]");
+    if ((!els.length && !lab.length) || !B || B.mode === "off") return;
+    B.getStats().then(stats => {
+      els.forEach(el => {
+        const st = stats[el.dataset.stat] || {}, key = el.dataset.field || "plays";
+        el.textContent = plural((+el.dataset.base || 0) + (st[key] || 0), el.dataset.word);
+      });
+      const livePlays = Object.keys(stats).filter(k => k.startsWith("lab-")).reduce((n, k) => n + (+stats[k].plays || 0), 0);
+      const live = { experiments: 0, plays: livePlays, students: +((stats["totals/lab"] || {}).students) || 0 };
+      lab.forEach(el => { const k = el.dataset.labstat; el.textContent = (labStatBase[k] || 0) + (live[k] || 0); });
+    }).catch(() => {});
   };
   fillStats();
 

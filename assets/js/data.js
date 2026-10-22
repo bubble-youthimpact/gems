@@ -9,8 +9,9 @@ window.GEMS_DATA = {
   /* Numbers shown in the GEMS Lab stat boxes.
      "experiments" is counted automatically from the list below. */
   labStats: {
-    plays: 6,          // "PLAYS" / "TOTAL PLAYS"
-    studentViews: 3    // "STUDENTS" / "STUDENT VIEWS"
+    // Counts carried over from the old Bubble site. The homepage adds the live counts on top.
+    plays: 6,          // all GEMS Lab plays before the move
+    studentViews: 3    // different students who had watched a GEMS Lab video before the move
   },
 
   /* GEMS Lab experiment videos (newest first).
