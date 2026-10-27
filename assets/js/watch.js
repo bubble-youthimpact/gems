@@ -11,14 +11,22 @@
   const root = document.getElementById("watch");
   let unsubscribe = () => {}, unAuth = () => {};
 
+  /* GEMS Lab videos in the order people see them: the experiment library (01, 02, 03 …),
+     then any other experiment videos, then the chapter videos. Previous/Next follow this order. */
+  const labOrder = () => {
+    const exps = D.experiments || [], bySlug = new Map(exps.map(e => [e.slug, e])), seen = new Set(), out = [];
+    (D.library || []).forEach(x => { const e = x.video && bySlug.get(x.video); if (e && !seen.has(e.slug)) { seen.add(e.slug); out.push(e); } });
+    exps.forEach(e => { if (!seen.has(e.slug)) { seen.add(e.slug); out.push(e); } });
+    return out.concat(D.chapterVideos || []);
+  };
+
   const find = () => {
     const hash = decodeURIComponent(location.hash.slice(1));
     const m = hash.match(/^(podcast|lab)-(.+)$/);
     if (!m) return null;
     const kind = m[1];
-    let list = kind === "podcast" ? (D.episodes || []) : (D.experiments || []);
-    let i = list.findIndex(x => x.slug === m[2]);
-    if (i < 0 && kind === "lab") { list = D.chapterVideos || []; i = list.findIndex(x => x.slug === m[2]); }
+    const list = kind === "podcast" ? (D.episodes || []) : labOrder();
+    const i = list.findIndex(x => x.slug === m[2]);
     return i < 0 ? null : { kind, i, item: list[i], list, target: kind + "-" + m[2] };
   };
 
