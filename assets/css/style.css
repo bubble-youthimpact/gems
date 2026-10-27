@@ -1365,3 +1365,5 @@ body.lb-open { overflow: hidden; }
 .exp-card:hover .exp-watch, .exp-card:focus-visible .exp-watch { border-bottom-color: currentColor; }
 .exp-card .body:has(+ .exp-watch) { margin-bottom: 16px; }   /* at least 16px below the description … */
 .exp-watch { margin-top: auto; padding-top: 0; }              /* … and pushed to the bottom so the links line up */
+.comment-more { margin-top: 24px; }
+.comment-more:empty { display: none; }
