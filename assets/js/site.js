@@ -34,7 +34,7 @@
   const INITIATIVES = [
     { id: "hidden_gems", href: "hidden_gems/", label: "Hidden GEMS", icon: '<i class="ion ion-mic"></i>', desc: "Our podcast with women in STEM" },
     { id: "opal", href: "opal/", label: "OPAL", icon: '<i class="ph ph-book-open"></i>', desc: "A STEM textbook and 56-experiment kit for ages 10–14" },
-    { id: "gems_lab", href: "gems_lab/", label: "GEMS Lab", icon: '<i class="ion ion-flask"></i>', desc: "37 physics experiments you can run at home, with full lab worksheets" },
+    { id: "gems_lab", href: "gems_lab/", label: "GEMS Lab", icon: '<i class="ion ion-flask"></i>', desc: "40 physics experiments you can run at home, with full lab worksheets" },
     { id: "workshops", href: "workshops/", label: "In-Person Workshops", icon: '<i class="ph ph-users"></i>', desc: "Multi-day STEM workshops at children's centers" }
   ];
   const inInitiatives = page === "initiatives" || INITIATIVES.some(i => i.id === page);
@@ -165,9 +165,10 @@
         <span class="play-badge" aria-hidden="true"><i class="ph ph-play"></i></span>
         ${e.length ? `<span class="len">${esc(e.length)}</span>` : ""}</div>
       <div class="inner">
+        ${e.subject ? `<span class="exp-subject">${esc(e.subject)}</span>` : ""}
         <h3 class="display-m">${esc(e.title)}</h3>
         <p class="body">${esc(e.text)}</p>
-        <div class="views" data-stat="lab-${esc(e.slug)}" data-base="${+e.views || 0}" data-word="play">${plural(e.views || 0, "play")}</div>
+        ${e._noViews ? `<span class="exp-watch"><i class="ph ph-play"></i>Watch video</span>` : `<div class="views" data-stat="lab-${esc(e.slug)}" data-base="${+e.views || 0}" data-word="play">${plural(e.views || 0, "play")}</div>`}
       </div>
     </a>`;
 
@@ -219,13 +220,23 @@
     document.title = b.title + " · GEMS";
     el.innerHTML = `
       <section class="post-head">
-        <div class="eyebrow">${esc(b.category)}</div>
+        <div class="eyebrow">${esc(b.category)}${b.date ? " · " + esc(b.date) : ""}</div>
         <h1 class="post-title">${esc(b.title)}</h1>
-        <p class="body post-lede">${esc(b.text)}</p>
+        ${(b.body || []).includes(b.text) ? "" : `<p class="body post-lede">${esc(b.text)}</p>`}
       </section>
       <div class="post-rule"></div>
       <section class="post-body">
-        ${(b.body || []).map(p => `<p class="body">${esc(p)}</p>`).join("")}
+        ${(b.body || []).map(blk => {
+          if (typeof blk === "string") return `<p class="body">${esc(blk)}</p>`;
+          if (blk.h) return `<h2 class="post-h2">${esc(blk.h)}</h2>`;
+          if (blk.h3) return `<h3 class="post-h3">${esc(blk.h3)}</h3>`;
+          if (blk.sign) return `<p class="post-sign">— ${esc(blk.sign)}</p>`;
+          if (blk.table) return `<div class="post-table"><table>
+            <thead><tr>${blk.table.head.map(c => `<th scope="col">${esc(c)}</th>`).join("")}</tr></thead>
+            <tbody>${blk.table.rows.map(r => `<tr>${r.map((c, k) => k ? `<td>${esc(c)}</td>` : `<th scope="row">${esc(c)}</th>`).join("")}</tr>`).join("")}</tbody>
+          </table></div>`;
+          return "";
+        }).join("")}
         <div class="post-images">
           ${(b.images || []).map((src, k) => `<img src="${esc(u(src))}" alt="${esc(b.title)} — photo ${k + 1}" loading="${k ? "lazy" : "eager"}" data-label="Photo ${k + 1}">`).join("")}
         </div>
@@ -240,9 +251,10 @@
   window.addEventListener("hashchange", renderPost);
 
   /* Collaborators */
-  const badge = c => `<span class="collab-badge">${esc(c.short)}</span>`;
+  const logoImg = c => `<img src="${esc(u(c.logo))}" alt="${esc(c.short)} logo" loading="lazy" decoding="async">`;
+  const badge = c => c.logo ? `<span class="collab-logo-img">${logoImg(c)}</span>` : `<span class="collab-badge">${esc(c.short)}</span>`;
   const collabStrip = () => (D.collaborators || []).map(c =>
-    `<a class="collab-badge" href="${u("collaborators/")}#${esc(c.id)}" title="${esc(c.name)}">${esc(c.short)}</a>`).join("");
+    `<a class="collab-badge${c.logo ? " has-logo" : ""}" href="${u("collaborators/")}#${esc(c.id)}" title="${esc(c.name)}">${c.logo ? logoImg(c) : esc(c.short)}</a>`).join("");
   const collabEntry = (c, i) => `
     <article class="collab${i % 2 ? " flip" : ""}" id="${esc(c.id)}">
       <div class="collab-logo">${badge(c)}</div>
@@ -254,6 +266,8 @@
         ${c.about ? `<p class="body collab-about">${esc(c.about)}</p>` : ""}
         ${(c.together || []).length ? `<div class="collab-label">What we do together</div>
           <ul class="collab-list">${c.together.map(t => `<li><i class="ph ph-diamond"></i>${esc(t)}</li>`).join("")}</ul>` : ""}
+        ${c.quote ? `<figure class="collab-quote"><blockquote><p>${esc(c.quote)}</p></blockquote>
+          ${c.quoteBy ? `<figcaption>— ${esc(c.quoteBy)}</figcaption>` : ""}</figure>` : ""}
         ${c.pending ? `<span class="collab-pending">Statement pending</span>` : ""}
       </div>
     </article>`;
@@ -296,9 +310,9 @@
     return `<article class="latest-ep">
       <div class="latest-num">Ep ${String(i + 1).padStart(2, "0")}</div>
       <div>
-        <div class="guest-cat">${esc(e.category || "")}</div>
+        ${e.category ? `<div class="guest-cat">${esc(e.category)}</div>` : ""}
         <h3 class="latest-title"><a href="${watchUrl("podcast", e)}">${esc(e.title)}</a></h3>
-        <p class="body">${esc(e.text)}</p>
+        ${e.text ? `<p class="body">${esc(e.text)}</p>` : ""}
         <a class="btn btn-dark shadow-pink" href="${watchUrl("podcast", e)}" style="margin-top:20px"><i class="ph ph-play"></i>Play episode</a>
       </div>
     </article>`;
@@ -362,6 +376,7 @@
     const n = limit ? +limit : Infinity;
     const exps = (D.experiments || []).map((e, i) => ({ ...e, _i: i }));
     if (kind === "experiments") el.innerHTML = exps.slice(0, n).map(expCard).join("");
+    if (kind === "chapter-videos") el.innerHTML = (D.chapterVideos || []).map((e, i) => ({ ...e, _i: i, _noViews: true })).map(expCard).join("");
     if (kind === "featured") el.innerHTML = exps.filter(e => e.featured).slice(0, n).map(expCard).join("");
     if (kind === "featured-episodes") el.innerHTML = (D.episodes || []).filter(e => e.featured).slice(0, n).map(epCard).join("");
     if (kind === "episodes") el.innerHTML = (D.episodes || []).slice(0, n).map(epCard).join("");
@@ -375,8 +390,9 @@
       const inLib = new Set((D.library || []).map(x => x.video).filter(Boolean));
       el.innerHTML = (D.experiments || []).map((e, i) => ({ ...e, _i: i })).filter(e => !inLib.has(e.slug)).map(expCard).join("");
     }
-    if (kind === "guests") el.innerHTML = (D.episodes || []).map(epGuestCard).join("") +
-      (D.upcomingGuests || []).map(g => epGuestCard(g, -1)).join("");
+    if (kind === "guests") el.innerHTML =                     // newest first: coming soon, then Ep 06, 05, 04 …
+      (D.upcomingGuests || []).map(g => epGuestCard(g, -1)).join("") +
+      (D.episodes || []).map((e, i) => [e, i]).reverse().map(([e, i]) => epGuestCard(e, i)).join("");
     if (kind === "guest-filters") {
       const cats = [...new Set([...(D.episodes || []), ...(D.upcomingGuests || [])].map(e => e.category).filter(Boolean))];
       el.innerHTML = `<button class="chip active" data-filter="all" aria-pressed="true">All</button>` +
@@ -384,7 +400,7 @@
     }
     if (kind === "latest-episode") el.innerHTML = latestEpisode();
     if (kind === "past-workshops") el.innerHTML = pastWorkshops();
-    if (kind === "lab-count") el.textContent = (D.library || []).length;
+    if (kind === "lab-count") el.textContent = +(D.labStats || {}).experiments || (D.library || []).length;
     if (kind === "testimonials") el.innerHTML = (D.testimonials || []).map(tSchool).join("");
     if (kind === "school-count") el.textContent = (D.testimonials || []).length;
     if (kind === "collaborators") el.innerHTML = (D.collaborators || []).map(collabEntry).join("");
@@ -401,7 +417,8 @@
   });
   /* Homepage GEMS Lab counters: experiments in the library, total plays, different students */
   const LS = D.labStats || {};
-  const labStatBase = { experiments: (D.library || []).length, plays: +LS.plays || 0, students: +LS.studentViews || 0 };
+  const labStatBase = { experiments: LS.experiments ?? (D.library || []).length,
+    plays: LS.plays ?? (D.experiments || []).reduce((n, e) => n + (+e.views || 0), 0), students: LS.studentViews ?? 0 };
   document.querySelectorAll("[data-labstat]").forEach(el => { el.textContent = labStatBase[el.dataset.labstat] ?? 0; });
 
   /* ---------- Missing images show a labelled placeholder ---------- */
@@ -437,7 +454,7 @@
               <input id="acct-name" type="text" maxlength="40" autocomplete="nickname" required>
               <button class="btn btn-pink shadow-ink" type="submit" data-busy="Saving…">Save</button>
             </div>
-            <p class="name-help">Shown next to your comments.</p>
+            <p class="name-help">Used to greet you when you're signed in. It isn't shown on comments.</p>
           </div>
           <p class="form-status" id="name-status" role="status" aria-live="polite" hidden></p>
         </form>
@@ -783,7 +800,7 @@
   /* Live play counts: the number in data.js (carried over from the old site) plus plays counted here */
   const fillStats = () => {
     const els = document.querySelectorAll("[data-stat]"), lab = document.querySelectorAll("[data-labstat]");
-    if ((!els.length && !lab.length) || !B || B.mode === "off") return;
+    if (!D.liveCounts || (!els.length && !lab.length) || !B || B.mode === "off") return;
     B.getStats().then(stats => {
       els.forEach(el => {
         const st = stats[el.dataset.stat] || {}, key = el.dataset.field || "plays";
@@ -791,7 +808,8 @@
       });
       const livePlays = Object.keys(stats).filter(k => k.startsWith("lab-")).reduce((n, k) => n + (+stats[k].plays || 0), 0);
       const live = { experiments: 0, plays: livePlays, students: +((stats["totals/lab"] || {}).students) || 0 };
-      lab.forEach(el => { const k = el.dataset.labstat; el.textContent = (labStatBase[k] || 0) + (live[k] || 0); });
+      lab.forEach(el => { const k = el.dataset.labstat, base = labStatBase[k];
+        el.textContent = typeof base === "number" ? base + (live[k] || 0) : base; });
     }).catch(() => {});
   };
   fillStats();

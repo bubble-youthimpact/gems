@@ -8,10 +8,16 @@ window.GEMS_DATA = {
 
   /* Numbers shown in the GEMS Lab stat boxes.
      "experiments" is counted automatically from the list below. */
+  /* Play counts:
+       - each video or episode: starts from its "views" number below, then counts real plays on top
+       - homepage GEMS Lab "Plays" and "Students": the labStats numbers just below
+     liveCounts: true → each video/episode counts real plays on top of its "views" number
+     (needs the Firestore rules). The homepage "Plays"/"Students" stay exactly as written. */
+  liveCounts: true,
   labStats: {
-    // Counts carried over from the old Bubble site. The homepage adds the live counts on top.
-    plays: 6,          // all GEMS Lab plays before the move
-    studentViews: 3    // different students who had watched a GEMS Lab video before the move
+    experiments: 40,   // GEMS Lab "Experiments" number (homepage and GEMS Lab page)
+    plays: "3000+",    // homepage GEMS Lab "Plays" (shown exactly as written; delete this line to add up the videos' "views" instead)
+    studentViews: "3000+"   // homepage GEMS Lab "Students" (shown exactly as written)
   },
 
   /* GEMS Lab experiment videos (newest first).
@@ -320,11 +326,50 @@ window.GEMS_DATA = {
     }
   ],
 
+  /* GEMS Lab "Chapter videos" — shown at the bottom of the GEMS Lab page.
+     Each opens gems_lab/watch.html#lab-<slug> like the other experiment videos (members only).
+     video: a file in assets/video/chapters/, or a Google Drive / YouTube link */
+  chapterVideos: [
+    {
+      "slug": "light-chasers",
+      "title": "Light Chasers: Photosynthesis & Light",
+      "subject": "Biology",
+      "text": "How does the distance of a lamp from a sprig of pondweed affect the rate of photosynthesis, measured as oxygen bubbles per minute?",
+      "length": "6:37",
+      "views": 0,
+      "students": 0,
+      "image": "/assets/img/lab/chapters/light-chasers.webp",
+      "video": "/assets/video/chapters/light-chasers.mp4"
+    },
+    {
+      "slug": "fizz-race",
+      "title": "Fizz Race: Reaction Rate & Temperature",
+      "subject": "Chemistry",
+      "text": "How does the temperature of water affect the time it takes for an antacid tablet to fully dissolve?",
+      "length": "5:26",
+      "views": 0,
+      "students": 0,
+      "image": "/assets/img/lab/chapters/fizz-race.webp",
+      "video": "/assets/video/chapters/fizz-race.mp4"
+    },
+    {
+      "slug": "bubble-boost",
+      "title": "Bubble Boost: Enzymes & Temperature",
+      "subject": "Biology",
+      "text": "How does temperature affect the rate at which catalase in yeast breaks down hydrogen peroxide, measured as foam height?",
+      "length": "8:22",
+      "views": 0,
+      "students": 0,
+      "image": "/assets/img/lab/chapters/bubble-boost.webp",
+      "video": "/assets/video/chapters/bubble-boost.mp4"
+    }
+  ],
+
   experiments: [
     {
       "title": "Pendulum Timing: Exploring Simple Harmonic Motion",
       "text": "How does the length of a pendulum affect the time required for each swing? This experiment compares different string lengths and introduces simple harmonic motion, period, controlled measurement, gravity, and the physics behind a pendulum’s movement.",
-      "views": 3,
+      "views": 281,
       "length": "22:53",
       "featured": false,
       "image": "/assets/img/lab/welcome.webp",
@@ -335,7 +380,7 @@ window.GEMS_DATA = {
     {
       "title": "The Balloon Rocket Car: Newton’s Third Law in Motion",
       "text": "Can adding more air make a balloon-powered car travel farther? Build and test a simple rocket car while learning about action and reaction forces, air pressure, thrust, momentum, and Newton’s Third Law of Motion.",
-      "views": 1,
+      "views": 365,
       "length": "25:52",
       "featured": true,
       "image": "/assets/img/lab/welcome.webp",
@@ -346,7 +391,7 @@ window.GEMS_DATA = {
     {
       "title": "The Marble Ramp Race: How Steepness Affects Speed",
       "text": "How does a ramp’s angle change the speed of a rolling marble? This experiment uses ramps of different heights to explore gravity, friction, acceleration, and the component of gravitational force acting along an inclined surface.",
-      "views": 1,
+      "views": 233,
       "length": "13:55",
       "featured": false,
       "image": "/assets/img/lab/welcome.webp",
@@ -357,7 +402,7 @@ window.GEMS_DATA = {
     {
       "title": "The Pepper and Soap Experiment: Breaking Surface Tension",
       "text": "Watch pepper race toward the edge of a dish when soap touches the water. This experiment explains how soap lowers surface tension at the center, causing the surrounding water—and the pepper floating on it—to move outward.",
-      "views": 0,
+      "views": 286,
       "length": "8:44",
       "featured": false,
       "image": "/assets/img/lab/pepper-soap.webp",
@@ -368,7 +413,7 @@ window.GEMS_DATA = {
     {
       "title": "The Floating Ping-Pong Ball: Bernoulli’s Principle",
       "text": "Discover how a stream of air from a hair dryer can suspend a ping-pong ball—even when the dryer is tilted. This experiment uses balanced forces, air velocity, and pressure differences to explain Bernoulli’s principle in action.",
-      "views": 0,
+      "views": 341,
       "length": "10:44",
       "featured": true,
       "image": "/assets/img/lab/ping-pong.webp",
@@ -379,7 +424,7 @@ window.GEMS_DATA = {
     {
       "title": "Salt, Ice, and String: An Experiment with Friction",
       "text": "Can a piece of string lift an ice cube after salt is added? This investigation examines how salt changes the ice’s surface and increases friction, while also showing how an unsuccessful trial can reveal the effects of mass and experimental conditions.",
-      "views": 0,
+      "views": 217,
       "length": "7:32",
       "featured": false,
       "image": "/assets/img/lab/salt-ice.webp",
@@ -390,7 +435,7 @@ window.GEMS_DATA = {
     {
       "title": "The Water Bell Experiment: How Flow Creates Shape",
       "text": "What happens when running water strikes the curved surface of a spoon? By comparing weak, medium, and strong water flows, this experiment shows how momentum, gravity, surface tension, and flow rate create a bell-shaped sheet of water.",
-      "views": 0,
+      "views": 374,
       "length": "10:41",
       "featured": false,
       "image": "/assets/img/lab/water-bell.webp",
@@ -401,7 +446,7 @@ window.GEMS_DATA = {
     {
       "title": "Finding the Center of Mass: The Science of Balance",
       "text": "The geometric center of an object is not always its balancing point. Using a pencil and a bent object, this experiment explains how mass distribution and torque determine an object’s true center of mass.",
-      "views": 0,
+      "views": 258,
       "length": "6:58",
       "featured": false,
       "image": "/assets/img/lab/center-of-mass.webp",
@@ -412,7 +457,7 @@ window.GEMS_DATA = {
     {
       "title": "The Coin Drop Challenge: Newton’s First Law in Action",
       "text": "Why does a coin fall straight into a glass when the card beneath it is quickly flicked away? This experiment introduces inertia and explores how mass, friction, gravity, and horizontal force affect the motion of stacked coins.",
-      "views": 0,
+      "views": 309,
       "length": "7:24",
       "featured": false,
       "image": "/assets/img/lab/coin-drop.webp",
@@ -423,7 +468,7 @@ window.GEMS_DATA = {
     {
       "title": "The Waterproof Handkerchief: Exploring Surface Tension",
       "text": "Can a piece of cloth stop water from falling out of an upside-down cup? This experiment demonstrates how surface tension, cohesion, and adhesion create thousands of tiny water bridges across a wet handkerchief, forming a surprisingly strong liquid seal.",
-      "views": 1,
+      "views": 392,
       "length": "7:37",
       "featured": false,
       "image": "/assets/img/lab/handkerchief.webp",
@@ -444,7 +489,7 @@ window.GEMS_DATA = {
       "slug": "sonya-lloyd",
       "title": "Full Throttle: Sonya Lloyd on Racing, Engineering, and Making It Happen",
       "text": "By day, Sonya Lloyd engineers industrial automation systems at Siemens; by passion, she races motorcycles in MotoAmerica's Twins Cup and represented the USA at the FIM Women's Circuit Racing World Championship. Starting racing at 17 — considered \"late\" — she was first denied entry, then turned the rejection into a MotoGP internship. She explains why a race bike carries 300+ sensors, treats AI as \"a thought partner, not a thought leader,\" and lives by her own rule: \"You are unstoppable if you simply decide to not stop.\"",
-      "views": 2,
+      "views": 155,
       "students": 1,
       "color": "pink",
       "audio": "https://drive.google.com/file/d/13BZnAz2vYevU08uGLwWYdcBVFJYo9L1j/view",
@@ -458,7 +503,7 @@ window.GEMS_DATA = {
       "featured": true,
       "title": "\"If You Don't See Yourself in Science, Science Needs You\" — Professor Giulia Ferrini",
       "text": "From Genoa to Grenoble, Paris, Germany and finally Sweden, Professor Giulia Ferrini chased quantum physics across half of Europe — and now helps build Sweden's first superconducting quantum computer. She talks about quantum error correction, why quantum computers will force the world to rethink encryption, and the postdoc years when temporary contracts nearly broke her confidence. Her mantra for young scientists: \"If you don't see anyone in science that looks like you, then science needs you.\"",
-      "views": 0,
+      "views": 172,
       "students": 0,
       "color": "orange",
       "audio": "https://drive.google.com/file/d/15tTYngsnWktpxCvC-gT6357YbM-r9fbT/view",
@@ -471,7 +516,7 @@ window.GEMS_DATA = {
       "slug": "christiane-koch",
       "title": "Trust Your Questions: Christiane Koch on Quantum Physics and Self-Doubt",
       "text": "Professor Christiane Koch never planned to be a physicist — a one-year orientation program between high school and university convinced her that mathematics could describe reality. Today she studies chiral, \"handed\" molecules and how laser fields can reveal their hidden asymmetry. She speaks candidly about self-doubt at the start of her PhD and as a group leader, and reminds students that the goal of learning is not to get the right answer — it's to learn how to get to it.",
-      "views": 0,
+      "views": 132,
       "students": 0,
       "color": "green",
       "audio": "https://drive.google.com/file/d/12DeJ8UBrjI09nsd48o9GEBMgLARzzdLS/view",
@@ -485,7 +530,7 @@ window.GEMS_DATA = {
       "featured": true,
       "title": "From Physics to the Brain: Eden Zhu on Building an Interdisciplinary Career",
       "text": "Eden Zhu walked from physics degrees at Nanjing University and Cambridge into a neuroscience PhD at Emory University — and never lost her love of math along the way. She opens up about trying and rejecting experimental work, finding her home in computational research on human memory, and using AI as a partner rather than a replacement. Her message to girls entering male-dominated fields: find your community, speak up, and trust that setbacks are simply part of the research path.",
-      "views": 1,
+      "views": 222,
       "students": 1,
       "color": "pink",
       "audio": "https://drive.google.com/file/d/1GWVYjtuqM89aAw-gsiXWvogpS4FPSUUv/view",
@@ -493,6 +538,32 @@ window.GEMS_DATA = {
       "category": "Neuroscience",
       "role": "Neuroscience",
       "affiliation": "Emory University"
+    },
+    {
+      "slug": "song-jung-hee",
+      "title": "Hidden GEMS with Professor Song Jung-hee",
+      "text": "",
+      "views": 213,
+      "students": 0,
+      "color": "green",
+      "audio": "https://drive.google.com/file/d/1SS5ZLmiAoVXHEiKLajsU6r1qsWRX4m6o/view",
+      "guest": "Professor Song Jung-hee",
+      "category": "",
+      "role": "",
+      "affiliation": ""
+    },
+    {
+      "slug": "alexa-fein",
+      "title": "Hidden GEMS with Alexa Fein",
+      "text": "",
+      "views": 198,
+      "students": 0,
+      "color": "orange",
+      "audio": "https://drive.google.com/file/d/11bCmWkThu8UZTzMD4Tp-g99rtu3bAF2m/view",
+      "guest": "Alexa Fein",
+      "category": "",
+      "role": "",
+      "affiliation": ""
     }
   ],
 
@@ -500,9 +571,152 @@ window.GEMS_DATA = {
      Each one also gets its own page: newsletter/briefing.html#<slug>
      slug:   the short web address name — letters, numbers and dashes only
      color:  left panel color — "pink", "orange" or "green"
-     body:   the full write-up, one string per paragraph
+     body:   the full write-up — one string per paragraph, or { "h": "Heading" }, { "h3": "Smaller heading" },
+             { "table": { "head": [...], "rows": [[...], ...] } }, { "sign": "Name" } for the sign-off
      images: photos shown under the write-up, in order (files in assets/img/newsletter/) */
   briefings: [
+    {
+      "slug": "hidden-gems-lessons-from-three-women",
+      "date": "2026.10",
+      "category": "NEWSLETTER",
+      "place": "HIDDEN GEMS",
+      "color": "green",
+      "title": "Hidden GEMS Newsletter: Lessons from Three Inspiring Women",
+      "text": "Over the last several weeks, I had the opportunity to interview three remarkable women: theoretical quantum physicist Christiane Koch, computational neuroscientist Eden Zhu, and professional motorcycle racer Sonya Lloyd.",
+      "body": [
+        {
+          "h": "Three Different Journeys, Shared Lessons"
+        },
+        "Over the last several weeks, I had the opportunity to interview three remarkable women: theoretical quantum physicist Christiane Koch, computational neuroscientist Eden Zhu, and professional motorcycle racer Sonya Lloyd.",
+        "Although their careers are very different, I noticed several similarities in their experiences. Each woman took an unexpected route toward her profession, encountered challenges along the way, and learned to overcome doubts about whether she belonged in her field.",
+        "Christiane originally had an interest in languages before pursuing physics. Eden explored multiple scientific disciplines before finding her place in neuroscience. Sonya faced rejection when she first attempted to enter motorcycle racing but discovered another opportunity that eventually helped her advance.",
+        "Their experiences reminded me that success does not always follow a predictable path. Sometimes, unexpected obstacles and changes in direction can lead to the most valuable opportunities.",
+        "In this edition of the Hidden GEMS newsletter, I want to share some of the most memorable lessons from these conversations and reflect on what young women interested in STEM can learn from them.",
+        {
+          "h": "Professor Christiane Koch: Learning to Embrace Uncertainty"
+        },
+        "Professor Christiane Koch specializes in theoretical quantum physics, particularly molecular chirality and quantum control.",
+        "Molecular chirality describes molecules that exist in two mirror-image forms, much like our left and right hands. Despite having similar physical characteristics, these molecules can interact differently in chemical processes and medications. Christiane's research investigates how laser fields can help scientists distinguish between these molecular structures and better understand their behavior.",
+        "While her scientific research was fascinating, I was especially interested in her perspective on uncertainty and confidence.",
+        "Christiane explained that she experienced periods of self-doubt throughout her academic career, including while completing her PhD and transitioning into leadership positions. Rather than viewing uncertainty as a weakness, she learned to recognize it as a natural part of intellectual growth.",
+        "One of the most meaningful lessons from our conversation was that questions and confusion should encourage further exploration instead of discouraging us. Not knowing something does not mean we are incapable. It often means there is an opportunity to learn.",
+        "We also discussed the importance of mentorship for women pursuing careers in science. Christiane emphasized that encouragement can come from many sources, including teachers, colleagues, friends, and family members. The most effective mentors, in her experience, provide support not only for professional achievements but also for personal development and well-being.",
+        "Another important topic was artificial intelligence in education. Christiane acknowledged the potential benefits of AI but expressed concern that students could become overly dependent on it. She believes that learning to evaluate information, question assumptions, and solve problems independently remains essential.",
+        "Her perspective reminded me that technology should strengthen our abilities rather than replace the thinking processes that help us grow as learners and researchers.",
+        {
+          "h": "Eden Zhu: Finding Your Direction Through Exploration"
+        },
+        "Eden Zhu's academic journey demonstrates how exploring different interests can help someone discover a more meaningful career path.",
+        "She began studying condensed matter physics and materials science before developing an interest in neuroscience. Over time, she gained experience in electrophysiology, movement science, cognitive science, computational research, and education. She also explored career opportunities outside academia before deciding to focus on research.",
+        "Her current work in Tankut Can's theoretical physics group at Emory University examines cognition and memory through computational and theoretical approaches.",
+        "One of the most interesting parts of our discussion was her experience transitioning between experimental and theoretical research.",
+        "Although Eden initially performed well in laboratory courses, she discovered that conducting biological experiments in professional research settings was much more complicated. Biological samples did not always behave consistently, experimental procedures required extensive preparation, and producing reliable findings could take significant time.",
+        "These challenges eventually led her to focus more on computational modeling and theoretical research.",
+        "However, Eden did not consider her laboratory experience a failure. Instead, it gave her a deeper appreciation for how experimental data is produced and what limitations researchers must consider when interpreting results.",
+        "This experience helped her become more thoughtful when evaluating datasets and constructing computational models.",
+        "Our conversation also explored challenges faced by women in STEM. Eden emphasized the importance of recognizing the difference between difficulties caused by personal circumstances and barriers created by broader institutional or social structures.",
+        "She also challenged the expectation that women should always maintain a broad range of interests rather than develop expertise in one particular area. In her view, becoming highly skilled in a specialized discipline is just as valuable as working across multiple fields.",
+        "Eden identified physicist Richard Feynman as an important intellectual influence, particularly because of his emphasis on intuitive understanding and communicating complicated ideas clearly. She attempted to bring a similar approach into her own teaching experiences, although she discovered that different students respond to different explanations.",
+        "What I appreciated most was her willingness to experiment with her own career direction.",
+        "Her story showed me that students do not need to know exactly which scientific discipline or research method they want to pursue from the beginning. Exploring unfamiliar subjects, discovering personal preferences, and even realizing that something is not the right fit are all valuable parts of learning.",
+        {
+          "h": "Sonya Lloyd: Combining Engineering with Motorcycle Racing"
+        },
+        "Before interviewing Sonya Lloyd, I primarily thought of motorcycle racing as a competitive sport. Our conversation helped me understand just how much science and engineering contribute to professional motorsports.",
+        "Sonya is a professional motorcycle road racer with experience in engineering, data analysis, and biological engineering.",
+        "She explained that racing involves much more than controlling a motorcycle at high speeds. Engineers and racers must interpret sensor data, understand physical forces, evaluate mechanical performance, develop race strategies, and make decisions based on technical information.",
+        "Her career illustrates how STEM skills can be applied in industries that students might not traditionally associate with science.",
+        "Sonya's introduction to professional racing was not straightforward.",
+        "When she initially tried to enter the sport, she was rejected and unable to pursue that opportunity for approximately a year. Instead of abandoning her interest, she searched for another way to become involved and eventually secured an internship with MotoGP.",
+        "This alternative route allowed her to develop relevant experience and establish connections within the motorsports industry.",
+        "Her experience demonstrated the importance of finding new approaches when an original plan does not work.",
+        "We also spoke about her experiences as a woman in a predominantly male environment. Sonya described situations in which others underestimated her technical knowledge or offered unnecessary explanations about equipment she already understood.",
+        "Rather than allowing these assumptions to undermine her confidence, she focused on developing her skills and trusting her professional judgment.",
+        "Sonya also discussed how seeing women in technical leadership positions shaped her ambitions. Her mother held a senior global research and development position at Coca-Cola, providing an early example of a woman succeeding in a science-driven organization.",
+        "That representation helped Sonya imagine similar possibilities for herself.",
+        "Another lesson she emphasized was the value of pursuing unfamiliar challenges. She encouraged students to explore activities that seem difficult or intimidating instead of automatically avoiding them.",
+        "Sometimes, the experiences that initially make us uncomfortable are the ones that reveal interests and abilities we did not know we had.",
+        "Finally, we discussed artificial intelligence in motorsports. Sonya explained that AI can help teams interpret telemetry, evaluate performance, and consider different strategies. However, she believes people must remain responsible for important decisions, especially those involving safety.",
+        "Her perspective reinforced a theme that also emerged in my conversation with Christiane: AI can provide valuable assistance, but human reasoning and responsibility should remain central.",
+        {
+          "h": "Key Lessons from These Conversations"
+        },
+        "After reflecting on all three interviews, I identified several ideas that I hope young women exploring STEM careers will find useful.",
+        {
+          "h3": "1. Career paths do not have to follow a straight line."
+        },
+        "Christiane's transition from languages to physics, Eden's movement across scientific disciplines, and Sonya's unconventional entrance into racing demonstrate that changing direction can create opportunities for growth. Experiences that initially seem unrelated may eventually become valuable strengths.",
+        {
+          "h3": "2. Uncertainty can contribute to progress."
+        },
+        "Each guest approached challenges differently. Christiane viewed questions as opportunities for investigation, Eden learned from experiences that did not go as expected, and Sonya searched for alternatives when she encountered rejection. Their stories show that setbacks can provide information that helps us make better decisions.",
+        {
+          "h3": "3. Support comes from communities and relationships."
+        },
+        "Mentors, family members, colleagues, and friends all played meaningful roles in these women's development. Their experiences highlight the importance of building supportive relationships, particularly in fields where women remain underrepresented.",
+        {
+          "h3": "4. Recognizing the source of a challenge matters."
+        },
+        "Eden's distinction between personal difficulties and structural barriers was especially insightful. Understanding whether a challenge comes from an individual skill gap or a broader system can help us determine the most effective way to respond.",
+        {
+          "h3": "5. Developing specialized expertise is valuable."
+        },
+        "Women should feel comfortable pursuing advanced knowledge in subjects they genuinely enjoy. There is no requirement to remain a generalist or follow someone else's expectations about what a successful career should look like.",
+        {
+          "h3": "6. Unfamiliar opportunities are worth exploring."
+        },
+        "Sonya's journey demonstrates how meaningful interests can emerge from experiences that initially seem challenging. Trying something new can uncover unexpected abilities, interests, and career possibilities.",
+        {
+          "h3": "7. Artificial intelligence should support independent thinking."
+        },
+        "Both Christiane and Sonya emphasized that AI can be a powerful resource when used responsibly. However, critical thinking, ethical judgment, and human accountability remain essential, whether in scientific research, education, or competitive racing.",
+        "Perhaps my biggest takeaway was that there is no single personality or career journey that defines a successful woman in STEM.",
+        "Christiane approached challenges through reflection and curiosity. Eden relied on careful analysis and experimentation. Sonya demonstrated confidence, persistence, and a willingness to confront obstacles directly.",
+        "Their differences are a reminder that young women do not need to fit a particular image to succeed in science, engineering, or other technical fields.",
+        {
+          "h": "Looking Ahead"
+        },
+        "All three podcast interviews have now been completed, edited, approved, and published.",
+        "Eden Zhu's interview is available publicly, while the conversations with Christiane Koch and Sonya Lloyd can be accessed through the GEMS website with a free account.",
+        "The account system allows students to keep track of the episodes they have viewed and the topics they have explored. It also provides an additional level of privacy for our interview guests.",
+        {
+          "table": {
+            "head": [
+              "Guest",
+              "Recording Date",
+              "Availability"
+            ],
+            "rows": [
+              [
+                "Christiane Koch",
+                "Summer 2026",
+                "GEMS website (free account required)"
+              ],
+              [
+                "Eden Zhu",
+                "September 1, 2026",
+                "Publicly available"
+              ],
+              [
+                "Sonya Lloyd",
+                "September 15, 2026",
+                "GEMS website (free account required)"
+              ]
+            ]
+          }
+        },
+        "Beyond publishing these episodes, we are working to introduce the interviews to schools and educational partners in Rwanda and Tanzania.",
+        "An important goal of the GEMS podcast is to make stories of women in STEM accessible to girls who may have limited opportunities to meet female scientists, engineers, and professionals.",
+        "By sharing these conversations with more students, we hope to help young women discover potential career paths, develop confidence in their interests, and recognize that there are many different ways to succeed.",
+        "We are also continuing to look for inspiring women in STEM who would be interested in sharing their experiences. If you know someone whose journey could encourage young students, please consider introducing her to our team.",
+        "Thank you for supporting Hidden GEMS and helping us share these stories with the next generation.",
+        {
+          "sign": "Jihu"
+        }
+      ],
+      "images": [],
+      "button": "READ THE NEWSLETTER"
+    },
     {
       "slug": "kenya-service-trip",
       "date": "2025.05",
@@ -581,12 +795,15 @@ window.GEMS_DATA = {
 
   /* Collaborators — shown on the home page strip and the Collaborators page, in this order.
      id:        short web anchor → collaborators/#<id>
+     quote / quoteBy: an optional statement and who said it (shown as a pull quote)
+     logo:  logo image (assets/img/collaborators/); "short" is shown instead if there's no logo
      short:     the text in the badge (SWE, TTTA …)
      website:   leave "" to hide the "Visit website" link
      pending:   true shows a "Statement pending" tag instead of an empty description */
   collaborators: [
     {
       "id": "swe",
+      "logo": "/assets/img/collaborators/swe.webp",
       "short": "SWE",
       "name": "Society of Women Engineers",
       "meta": "Global professional organization · Global (HQ: United States)",
@@ -602,6 +819,7 @@ window.GEMS_DATA = {
     },
     {
       "id": "ttta",
+      "logo": "/assets/img/collaborators/ttta.webp",
       "short": "TTTA",
       "name": "The Tiger Team Academy",
       "meta": "Coding bootcamp and digital innovation incubator · Nakhon Ratchasima (Korat), Thailand",
@@ -617,16 +835,18 @@ window.GEMS_DATA = {
     },
     {
       "id": "oecd",
+      "logo": "/assets/img/collaborators/oecd.webp",
       "short": "OECD",
       "name": "OPAL Reviewer at the OECD",
-      "meta": "Individual · Official at the Organisation for Economic Co-operation and Development",
+      "meta": "Economist and Gender Programme Co-ordinator, OECD Development Centre",
       "website": "https://www.oecd.org/",
       "relationship": "Reviewer of the OPAL textbook",
       "about": "",
       "together": [
         "Official comments on the OPAL textbook"
       ],
-      "pending": true
+      "quote": "OPAL is an exciting example of how science education can inspire young people to think beyond traditional classroom boundaries. By introducing students aged 10 to 14 to advanced subjects such as quantum physics, astrophysics, genetics, and neuroscience, the book makes complex scientific concepts accessible through engaging explanations, stories, and hands-on experiments. I particularly value its emphasis on connecting scientific discovery to real-world challenges and the United Nations Sustainable Development Goals. By encouraging students to investigate questions, conduct experiments, and challenge stereotypes about who belongs in STEM, OPAL nurtures curiosity, critical thinking, and confidence. Its commitment to affordable materials and accessible learning opportunities also demonstrates how quality STEM education can reach students across diverse communities and help prepare the next generation of scientists and innovators.",
+      "quoteBy": "Ms. Hyeshin Park, Economist and Gender Programme Co-ordinator, OECD Development Centre"
     }
   ],
 

@@ -24,8 +24,10 @@
     const hash = decodeURIComponent(location.hash.slice(1));
     const m = hash.match(/^(podcast|lab)-(.+)$/);
     if (!m) return null;
-    const kind = m[1], list = kind === "podcast" ? (D.episodes || []) : (D.experiments || []);
-    const i = list.findIndex(x => x.slug === m[2]);
+    const kind = m[1];
+    let list = kind === "podcast" ? (D.episodes || []) : (D.experiments || []);
+    let i = list.findIndex(x => x.slug === m[2]);
+    if (i < 0 && kind === "lab") { list = D.chapterVideos || []; i = list.findIndex(x => x.slug === m[2]); }
     return i < 0 ? null : { kind, i, item: list[i], list, target: kind + "-" + m[2] };
   };
 
@@ -50,7 +52,7 @@
     const url = kind === "podcast" ? item.audio : item.video;
     const label = kind === "podcast"
       ? `Hidden GEMS · Episode ${i + 1}`
-      : `GEMS Lab${item.length ? " · " + item.length : ""}`;
+      : `GEMS Lab${item.subject ? " · Chapter video · " + item.subject : ""}${item.length ? " · " + item.length : ""}`;
     const prev = list[i - 1], next = list[i + 1];
     document.title = item.title + " · GEMS";
 
@@ -61,11 +63,10 @@
           <span class="eyebrow">${esc(label)}</span>
         </div>
         <h1 class="post-title">${esc(item.title)}</h1>
-        <p class="body watch-lede">${esc(item.text)}</p>
+        ${item.text ? `<p class="body watch-lede">${esc(item.text)}</p>` : ""}
         <div class="watch-player" id="player"></div>
         <div class="watch-meta">
           <span class="chip" data-stat="${target}" data-field="plays" data-base="${+item.views || 0}" data-word="play">${plural(item.views || 0, "play")}</span>
-          <span class="chip" data-stat="${target}" data-field="students" data-base="${+item.students || 0}" data-word="student">${plural(item.students || 0, "student")}</span>
           <span id="open-link"></span>
         </div>
       </section>
@@ -107,7 +108,7 @@
 
     /* Count one play per browser session per item, only for signed-in members (the player is locked otherwise) */
     const countPlay = () => {
-      if (!B || B.mode === "off" || !B.user) return;
+      if (!(window.GEMS_DATA || {}).liveCounts || !B || B.mode === "off" || !B.user) return;
       const key = "gems-played:" + target + ":" + B.user.uid;
       try { if (sessionStorage.getItem(key)) return fillStats(); sessionStorage.setItem(key, "1"); } catch {}
       B.recordPlay(target).catch(() => {}).finally(fillStats);
@@ -132,7 +133,7 @@
       }
       composer.innerHTML = `
         <form id="comment-form" novalidate>
-          <label class="commenting-as" for="comment-text">Commenting as <strong>${esc(user.name)}</strong></label>
+          <label class="commenting-as" for="comment-text">Posting as <strong>GEMS member</strong> <span class="anon-note">Your name isn't shown with comments.</span></label>
           <textarea id="comment-text" maxlength="2000" rows="4" placeholder="What did you notice? What would you try next?"></textarea>
           <div class="composer-row">
             <button class="btn btn-dark" type="submit" disabled>Post comment</button>
@@ -164,7 +165,7 @@
         const mine = me && c.uid === me.uid;
         return `<li class="comment${mine ? " mine" : ""}" data-id="${esc(c.id)}">
           <div class="comment-head">
-            <span class="comment-name">${esc(c.name || "Someone")}${mine ? ' <span class="you">You</span>' : ""}</span>
+            <span class="comment-name">GEMS member${mine ? ' <span class="you">You</span>' : ""}</span>
             <time datetime="${new Date(c.createdAt).toISOString()}">${ago(c.createdAt)}</time>
           </div>
           <p class="body comment-text">${esc(c.text)}</p>

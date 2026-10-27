@@ -115,7 +115,7 @@
         text = clean(text); if (!text) throw new Error("Write something first.");
         const list = all();
         list.push({ id: "c" + Date.now() + Math.random().toString(36).slice(2, 6), target, text,
-                    uid: currentUser.uid, name: currentUser.name, createdAt: Date.now() });
+                    uid: currentUser.uid, name: "", createdAt: Date.now() });
         store.set("gems-demo-comments", list); emit(target);
       },
       async deleteComment(id) {
@@ -260,7 +260,7 @@
         text = clean(text); if (!text) throw new Error("Write something first.");
         try {
           await F.addDoc(F.collection(db, "comments"), {
-            target, text, uid: currentUser.uid, name: String(currentUser.name || "Someone").slice(0, 40), createdAt: F.serverTimestamp()
+            target, text, uid: currentUser.uid, name: "", createdAt: F.serverTimestamp()   // names are not shown or saved with comments
           });
         } catch (e) { throw friendly(e); }
       },
