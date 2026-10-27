@@ -11,15 +11,6 @@
   const root = document.getElementById("watch");
   let unsubscribe = () => {}, unAuth = () => {};
 
-  const ago = ms => {
-    const s = Math.round((Date.now() - ms) / 1000);
-    if (s < 60) return "just now";
-    if (s < 3600) return Math.floor(s / 60) + " min ago";
-    if (s < 86400) return Math.floor(s / 3600) + " hr ago";
-    if (s < 86400 * 7) return plural(Math.floor(s / 86400), "day") + " ago";
-    return new Date(ms).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  };
-
   const find = () => {
     const hash = decodeURIComponent(location.hash.slice(1));
     const m = hash.match(/^(podcast|lab)-(.+)$/);
@@ -166,7 +157,6 @@
         return `<li class="comment${mine ? " mine" : ""}" data-id="${esc(c.id)}">
           <div class="comment-head">
             <span class="comment-name">GEMS member${mine ? ' <span class="you">You</span>' : ""}</span>
-            <time datetime="${new Date(c.createdAt).toISOString()}">${ago(c.createdAt)}</time>
           </div>
           <p class="body comment-text">${esc(c.text)}</p>
           ${mine ? `<div class="comment-actions">
