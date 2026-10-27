@@ -68,6 +68,7 @@
         <div id="composer"></div>
         <div class="comment-rule"></div>
         <ol class="comment-list" id="comment-list" aria-live="polite"></ol>
+        <div class="comment-more" id="comment-more"></div>
         <nav class="post-nav" aria-label="More ${kind === "podcast" ? "episodes" : "experiments"}">
           ${prev ? `<a href="${watchUrl(kind, prev)}"><span class="eyebrow">← Previous</span><span class="post-nav-title">${esc(prev.title)}</span></a>` : "<span></span>"}
           ${next ? `<a href="${watchUrl(kind, next)}" class="next"><span class="eyebrow">Next →</span><span class="post-nav-title">${esc(next.title)}</span></a>` : "<span></span>"}
@@ -110,6 +111,9 @@
     const listEl = document.getElementById("comment-list");
     const countEl = root.querySelector("#comments-title .count");
     let comments = [];
+    const PAGE = 10;                       // comments shown at first, and added per "Show more"
+    let shown = PAGE;
+    const moreEl = document.getElementById("comment-more");
 
     const drawComposer = user => {
       if (!B || B.mode === "off") {
@@ -148,11 +152,14 @@
     const drawList = () => {
       const me = B && B.user;
       countEl.textContent = `(${comments.length})`;
+      moreEl.innerHTML = "";
       if (!comments.length) {
         listEl.innerHTML = `<li class="comment-empty body muted">No comments yet.${me ? " Be the first." : ""}</li>`;
         return;
       }
-      listEl.innerHTML = comments.map(c => {
+      const left = comments.length - shown;
+      if (left > 0) moreEl.innerHTML = `<button class="btn btn-cream shadow-ink" type="button" data-more>Show more comments (${left})<i class="ph ph-caret-down"></i></button>`;
+      listEl.innerHTML = comments.slice(0, shown).map(c => {
         const mine = me && c.uid === me.uid;
         return `<li class="comment${mine ? " mine" : ""}" data-id="${esc(c.id)}">
           <div class="comment-head">
@@ -168,6 +175,11 @@
         </li>`;
       }).join("");
     };
+
+    moreEl.addEventListener("click", e => {
+      if (!e.target.closest("[data-more]")) return;
+      shown += PAGE; drawList();
+    });
 
     listEl.addEventListener("click", async e => {
       const ask = e.target.closest("[data-del]"), yes = e.target.closest("[data-del-yes]"), no = e.target.closest("[data-del-no]");
