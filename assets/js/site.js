@@ -288,7 +288,7 @@
         <h3 class="lib-title">${esc(x.title)}</h3>
         <p class="lib-concept">${esc(x.concept)}</p>
         ${v ? `<a class="btn btn-pink shadow-ink lib-btn" href="${watchUrl("lab", v)}"><i class="ph ph-play"></i>Watch</a>`
-            : `<span class="btn lib-btn lib-soon" aria-disabled="true"><i class="ph ph-play"></i>Filming</span>`}
+            : `<span class="btn lib-btn lib-soon" aria-disabled="true"><i class="ph ph-play"></i>To be released soon</span>`}
       </div>
     </article>`;
   };

@@ -1367,3 +1367,13 @@ body.lb-open { overflow: hidden; }
 .exp-watch { margin-top: auto; padding-top: 0; }              /* … and pushed to the bottom so the links line up */
 .comment-more { margin-top: 24px; }
 .comment-more:empty { display: none; }
+/* OPAL real book cover */
+.opal-cover.has-img { padding: 0; background: var(--white); aspect-ratio: 1000 / 1419; height: auto; min-height: 0; overflow: hidden; }
+.opal-cover.has-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (min-width: 900px) { .opal-intro { align-items: start; } .opal-cover.has-img { max-width: 440px; justify-self: end; width: 100%; } }
+@media (max-width: 899px) { .opal-cover.has-img { max-width: 360px; aspect-ratio: 1000 / 1419; } }
+/* Hidden GEMS "more coming soon" note */
+.more-soon { display: flex; align-items: flex-start; gap: 14px; margin-top: 24px; padding: 20px 24px; border: 2px dashed var(--ink); background: #EBE7DE; }
+.more-soon .ph { font-size: 22px; color: var(--pink); flex-shrink: 0; margin-top: 2px; }
+.more-soon p { font: 400 18px/1.5 var(--f-serif); }
+.more-soon strong { font-weight: 700; color: var(--ink); }

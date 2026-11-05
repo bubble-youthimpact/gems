@@ -548,8 +548,8 @@ window.GEMS_DATA = {
       "color": "green",
       "audio": "https://drive.google.com/file/d/1SS5ZLmiAoVXHEiKLajsU6r1qsWRX4m6o/view",
       "guest": "Professor Song Jung-hee",
-      "category": "",
-      "role": "",
+      "category": "Electronic Engineering",
+      "role": "Honorary Professor at Hanyang University",
       "affiliation": ""
     },
     {
@@ -561,8 +561,8 @@ window.GEMS_DATA = {
       "color": "orange",
       "audio": "https://drive.google.com/file/d/11bCmWkThu8UZTzMD4Tp-g99rtu3bAF2m/view",
       "guest": "Alexa Fein",
-      "category": "",
-      "role": "",
+      "category": "Applied Physics",
+      "role": "Harvard University Applied Physics Undergraduate",
       "affiliation": ""
     }
   ],
@@ -853,7 +853,7 @@ window.GEMS_DATA = {
   /* ---------- Initiative pages ----------
      upcomingGuests: Hidden GEMS guests whose episode isn't out yet ("Coming soon" cards)
      labCategories / library: the GEMS Lab experiment curriculum.
-       video: the slug of a released experiment video above → card shows "Watch"; "" → "Filming"
+       video: the slug of a released experiment video above → card shows "Watch"; "" → "To be released soon"
      opalAmazonUrl: paste the Amazon link when OPAL is listed; "" shows "Link coming soon" */
   upcomingGuests: [
     {

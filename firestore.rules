@@ -76,6 +76,41 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Different people across a whole series (all GEMS Lab videos, or all podcast episodes).
+    // viewers/<lab|podcast>__<uid> is private; totals/<lab|podcast> holds the count and
+    // may only go up by 1, and only when that person's first record is created.
+    match /viewers/{viewerId} {
+      allow get: if request.auth != null
+        && (viewerId == 'lab__' + request.auth.uid || viewerId == 'podcast__' + request.auth.uid);
+
+      allow create: if request.auth != null
+        && (viewerId == 'lab__' + request.auth.uid || viewerId == 'podcast__' + request.auth.uid)
+        && request.resource.data.keys().hasOnly(['uid', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.at == request.time;
+
+      allow list, update, delete: if false;
+    }
+
+    match /totals/{kind} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+        && (kind == 'lab' || kind == 'podcast')
+        && request.resource.data.keys().hasOnly(['students'])
+        && request.resource.data.students == 1
+        && !exists(/databases/$(database)/documents/viewers/$(kind + '__' + request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/viewers/$(kind + '__' + request.auth.uid));
+
+      allow update: if request.auth != null
+        && request.resource.data.keys().hasOnly(['students'])
+        && request.resource.data.students == resource.data.students + 1
+        && !exists(/databases/$(database)/documents/viewers/$(kind + '__' + request.auth.uid))
+        && existsAfter(/databases/$(database)/documents/viewers/$(kind + '__' + request.auth.uid));
+
+      allow delete: if false;
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;
