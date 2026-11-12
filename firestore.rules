@@ -4,7 +4,8 @@ rules_version = '2';
 // Paste into Firebase console → Firestore Database → Rules → Publish.
 //
 // - Anyone can read comments.
-// - Only signed-in people can post, only as themselves, with 1–2000 characters.
+// - Only signed-in people can post, only as themselves, with 1–2000 characters
+//   and an optional grade (Grade 6–12).
 // - People can delete only their own comments. Nobody can edit a comment.
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -13,7 +14,9 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if request.auth != null
-        && request.resource.data.keys().hasOnly(['target', 'text', 'uid', 'name', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['target', 'text', 'uid', 'name', 'grade', 'createdAt'])
+        && (!('grade' in request.resource.data)
+            || request.resource.data.grade.matches('^(Grade (6|7|8|9|10|11|12))?$'))
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
@@ -28,6 +31,16 @@ service cloud.firestore {
         && resource.data.uid == request.auth.uid;
 
       allow update: if false;
+    }
+
+    // Each person's grade (shown on their comments). Only they can read or change it.
+    match /profiles/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['grade'])
+        && request.resource.data.grade is string
+        && request.resource.data.grade.matches('^(Grade (6|7|8|9|10|11|12))?$');
+      allow list, delete: if false;
     }
 
     // Play counts. One private record per person per video/episode (views/<target>__<uid>)

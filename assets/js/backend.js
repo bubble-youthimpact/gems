@@ -32,6 +32,7 @@
     resetPassword: async () => { throw new Error("Accounts aren't connected yet."); },
     signOut: async () => {},
     updateName: async () => { throw new Error("Accounts aren't connected yet."); },
+    updateGrade: async () => { throw new Error("Accounts aren't connected yet."); },
     recordPlay: async () => {},                 // counts a play (and a new student) for a video/episode
     getStats: async () => ({}),                 // { "lab-slug": { plays, students }, ... }
     watchComments: (_target, cb) => { cb([]); return () => {}; },
@@ -42,6 +43,10 @@
   const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const checkEmail = e => { e = String(e || "").trim(); if (!EMAIL.test(e)) throw new Error("Enter a valid email address."); return e; };
   const checkPass = p => { if (String(p || "").length < 6) throw new Error("Use a password with at least 6 characters."); return p; };
+  /* School grade shown on comments: "Grade 6" … "Grade 12", or "" (not shown) */
+  const GRADES = ["Grade 6", "Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"];
+  const checkGrade = g => { g = String(g || ""); if (g && !GRADES.includes(g)) throw new Error("Choose a grade from the list."); return g; };
+  api.GRADES = GRADES;
   const checkName = n => { n = String(n || "").trim().slice(0, 40); if (!n) throw new Error("Enter a name first."); return n; };
   const clean = t => String(t || "").replace(/\r\n/g, "\n").trim().slice(0, MAX);
 
@@ -66,17 +71,18 @@
         email = checkEmail(email).toLowerCase(); checkPass(password);
         const acct = store.get("gems-demo-accounts", {})[email];
         if (!acct) throw new Error("There's no account with that email yet. Create one instead.");
-        const u = { uid: "demo-" + email, name: acct.name };
+        const u = { uid: "demo-" + email, name: acct.name, grade: acct.grade || "" };
         store.set("gems-demo-user", u); setUser(u); return u;
       },
-      async signUp(name, email, password) {
+      async signUp(name, email, password, grade) {
+        grade = checkGrade(grade);
         name = String(name || "").trim().slice(0, 40);
         if (!name) throw new Error("Enter your name — it's shown on your comments.");
         email = checkEmail(email).toLowerCase(); checkPass(password);
         const accts = store.get("gems-demo-accounts", {});
         if (accts[email]) throw new Error("An account with that email already exists. Sign in instead.");
-        accts[email] = { name }; store.set("gems-demo-accounts", accts);
-        const u = { uid: "demo-" + email, name };
+        accts[email] = { name, grade }; store.set("gems-demo-accounts", accts);
+        const u = { uid: "demo-" + email, name, grade };
         store.set("gems-demo-user", u); setUser(u); return u;
       },
       async signInWithGoogle() {
@@ -94,6 +100,13 @@
         const email = currentUser.uid.replace(/^demo-/, ""), accts = store.get("gems-demo-accounts", {});
         if (accts[email]) { accts[email].name = name; store.set("gems-demo-accounts", accts); }
         const u = { ...currentUser, name }; store.set("gems-demo-user", u); setUser(u);
+      },
+      async updateGrade(grade) {
+        if (!currentUser) throw new Error("Sign in first.");
+        grade = checkGrade(grade);
+        const email = currentUser.uid.replace(/^demo-/, ""), accts = store.get("gems-demo-accounts", {});
+        if (accts[email]) { accts[email].grade = grade; store.set("gems-demo-accounts", accts); }
+        const u = { ...currentUser, grade }; store.set("gems-demo-user", u); setUser(u);
       },
       async recordPlay(target) {
         if (!currentUser) return;
@@ -115,7 +128,7 @@
         text = clean(text); if (!text) throw new Error("Write something first.");
         const list = all();
         list.push({ id: "c" + Date.now() + Math.random().toString(36).slice(2, 6), target, text,
-                    uid: currentUser.uid, name: "", createdAt: Date.now() });
+                    uid: currentUser.uid, name: "", grade: currentUser.grade || "", createdAt: Date.now() });
         store.set("gems-demo-comments", list); emit(target);
       },
       async deleteComment(id) {
@@ -138,7 +151,15 @@
       const app = initializeApp(cfg);
       const auth = A.getAuth(app);
       const db = F.getFirestore(app);
-      A.onAuthStateChanged(auth, u => setUser(u ? { uid: u.uid, name: u.displayName || (u.email || "").split("@")[0] } : null));
+      A.onAuthStateChanged(auth, async u => {
+        if (!u) return setUser(null);
+        const base = { uid: u.uid, name: u.displayName || (u.email || "").split("@")[0], grade: "" };
+        setUser(base);
+        try {                                                   // the grade lives in profiles/<uid>, readable only by its owner
+          const p = await F.getDoc(F.doc(db, "profiles", u.uid));
+          if (p.exists() && auth.currentUser && auth.currentUser.uid === u.uid) setUser({ ...base, grade: p.data().grade || "" });
+        } catch {}
+      });
       return { A, F, auth, db };
     })();
 
@@ -169,15 +190,17 @@
         email = checkEmail(email); checkPass(password);
         try { await A.signInWithEmailAndPassword(auth, email, password); } catch (e) { throw friendly(e); }
       },
-      async signUp(name, email, password) {
-        const { A, auth } = await ready;
+      async signUp(name, email, password, grade) {
+        const { A, F, auth, db } = await ready;
+        grade = checkGrade(grade);
         name = String(name || "").trim().slice(0, 40);
         if (!name) throw new Error("Enter your name — it's shown on your comments.");
         email = checkEmail(email); checkPass(password);
         try {
           const cred = await A.createUserWithEmailAndPassword(auth, email, password);
           await A.updateProfile(cred.user, { displayName: name });
-          setUser({ uid: cred.user.uid, name });
+          if (grade) await F.setDoc(F.doc(db, "profiles", cred.user.uid), { grade });
+          setUser({ uid: cred.user.uid, name, grade });
         } catch (e) { throw friendly(e); }
       },
       async signInWithGoogle() {
@@ -210,7 +233,14 @@
         if (!auth.currentUser) throw new Error("Sign in first.");
         name = checkName(name);
         try { await A.updateProfile(auth.currentUser, { displayName: name }); } catch (e) { throw friendly(e); }
-        setUser({ uid: auth.currentUser.uid, name });
+        setUser({ ...(currentUser || {}), uid: auth.currentUser.uid, name });
+      },
+      async updateGrade(grade) {
+        const { F, db, auth } = await ready;
+        if (!auth.currentUser) throw new Error("Sign in first.");
+        grade = checkGrade(grade);
+        try { await F.setDoc(F.doc(db, "profiles", auth.currentUser.uid), { grade }); } catch (e) { throw friendly(e); }
+        setUser({ ...(currentUser || {}), uid: auth.currentUser.uid, grade });
       },
       /* Plays and unique students. One private "views" record per person per item
          (views/<target>__<uid>) decides whether they're new; stats/<target> holds the totals.
@@ -260,7 +290,8 @@
         text = clean(text); if (!text) throw new Error("Write something first.");
         try {
           await F.addDoc(F.collection(db, "comments"), {
-            target, text, uid: currentUser.uid, name: "", createdAt: F.serverTimestamp()   // names are not shown or saved with comments
+            target, text, uid: currentUser.uid, name: "", grade: currentUser.grade || "",   // no names on comments, only the grade
+            createdAt: F.serverTimestamp()
           });
         } catch (e) { throw friendly(e); }
       },

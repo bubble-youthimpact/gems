@@ -136,7 +136,7 @@
       }
       composer.innerHTML = `
         <form id="comment-form" novalidate>
-          <label class="commenting-as" for="comment-text">Posting as <strong>GEMS member</strong> <span class="anon-note">Your name isn't shown with comments.</span></label>
+          <label class="commenting-as" for="comment-text">Posting as <strong>GEMS member${user.grade ? " \u00B7 " + esc(user.grade) : ""}</strong> <span class="anon-note">Your name isn't shown with comments.${user.grade ? "" : ' <button type="button" class="auth-link" data-open="account">Add your grade</button>'}</span></label>
           <textarea id="comment-text" maxlength="2000" rows="4" placeholder="What did you notice? What would you try next?"></textarea>
           <div class="composer-row">
             <button class="btn btn-dark" type="submit" disabled>Post comment</button>
@@ -171,7 +171,7 @@
         const mine = me && c.uid === me.uid;
         return `<li class="comment${mine ? " mine" : ""}" data-id="${esc(c.id)}">
           <div class="comment-head">
-            <span class="comment-name">GEMS member${mine ? ' <span class="you">You</span>' : ""}</span>
+            <span class="comment-name">GEMS member${c.grade ? `<span class="grade"> &middot; ${esc(c.grade)}</span>` : ""}${mine ? ' <span class="you">You</span>' : ""}</span>
           </div>
           <p class="body comment-text">${esc(c.text)}</p>
           ${mine ? `<div class="comment-actions">

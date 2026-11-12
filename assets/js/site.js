@@ -458,6 +458,17 @@
           </div>
           <p class="form-status" id="name-status" role="status" aria-live="polite" hidden></p>
         </form>
+        <form class="name-form grade-form" id="grade-form" novalidate>
+          <div class="field auth-field">
+            <label for="acct-grade">Grade</label>
+            <div class="name-row">
+              <select id="acct-grade"></select>
+              <button class="btn btn-pink shadow-ink" type="submit" data-busy="Saving…">Save</button>
+            </div>
+            <p class="name-help">Shown on your comments next to "GEMS member", for example "GEMS member &middot; Grade 8".</p>
+          </div>
+          <p class="form-status" id="grade-status" role="status" aria-live="polite" hidden></p>
+        </form>
         <button class="btn btn-dark shadow-pink" id="signout-btn" style="margin-top:8px">Sign out</button>
       </div>
     </div>
@@ -569,6 +580,10 @@
 
   const GOOGLE_ICON = `<svg class="g-icon" width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
 
+  /* Grade choices: middle school 6–8, high school 9–12 */
+  const gradeOptions = (sel = "") => `<option value="">Prefer not to say</option>
+    <optgroup label="Middle school">${["Grade 6", "Grade 7", "Grade 8"].map(g => `<option${g === sel ? " selected" : ""}>${g}</option>`).join("")}</optgroup>
+    <optgroup label="High school">${["Grade 9", "Grade 10", "Grade 11", "Grade 12"].map(g => `<option${g === sel ? " selected" : ""}>${g}</option>`).join("")}</optgroup>`;
   const field = (id, label, type, ac, extra = "") => `
     <div class="field auth-field">
       <div class="auth-label-row"><label for="${id}">${label}</label>${extra}</div>
@@ -601,11 +616,15 @@
     signup: () => `
       <div class="eyebrow orange">It only takes a minute</div>
       <h2 class="display-m auth-title" id="signin-title">Create your account.</h2>
-      <p class="auth-sub">Free for everyone. Your name appears on the comments you post.</p>
+      <p class="auth-sub">Free for everyone. Comments show only "GEMS member" and your grade, never your name.</p>
       <button type="button" class="btn btn-google" data-google>${GOOGLE_ICON}<span>Sign up with Google</span></button>
       <div class="or-rule"><span>or sign up with email</span></div>
       <form id="signin-form" novalidate>
-        ${field("auth-name", "Name shown on comments", "text", "nickname")}
+        ${field("auth-name", "Your name", "text", "nickname")}
+        <div class="field auth-field">
+          <div class="auth-label-row"><label for="auth-grade">Grade <span class="opt">(optional)</span></label></div>
+          <select id="auth-grade">${gradeOptions()}</select>
+        </div>
         ${field("auth-email", "Email", "email", "email")}
         ${field("auth-pass", "Password", "password", "new-password")}
         <p class="auth-hint" id="pass-hint"><i class="ph ph-check-circle"></i>At least 6 characters</p>
@@ -713,7 +732,7 @@
     setBusy(btn, true);
     try {
       if (view === "signin") { await B.signIn(val("auth-email"), val("auth-pass")); closeModals(); }
-      else if (view === "signup") { await B.signUp(val("auth-name"), val("auth-email"), val("auth-pass")); closeModals(); }
+      else if (view === "signup") { await B.signUp(val("auth-name"), val("auth-email"), val("auth-pass"), document.getElementById("auth-grade").value); closeModals(); }
       else if (view === "reset") { await B.resetPassword(val("auth-email")); sentTo = val("auth-email").trim(); view = "sent"; renderSignin(); return; }
     } catch (x) { showError(x.message); }
     setBusy(btn, false);
@@ -721,12 +740,25 @@
 
   document.getElementById("signout-btn").addEventListener("click", async () => { await B.signOut(); closeModals(); });
 
+  /* Account: change grade */
+  const gradeForm = document.getElementById("grade-form"), gradeStatus = document.getElementById("grade-status");
+  const gradeSay = (msg, kind) => { gradeStatus.className = "form-status " + kind; gradeStatus.innerHTML = msg; gradeStatus.hidden = !msg; };
+  gradeForm.addEventListener("change", () => gradeSay("", "info"));
+  gradeForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const btn = gradeForm.querySelector('[type="submit"]'), g = document.getElementById("acct-grade").value;
+    setBusy(btn, true);
+    try { await B.updateGrade(g); gradeSay(`<i class="ph ph-check-circle"></i><span>${g ? "Saved. New comments will show " + esc(g) + "." : "Saved. Your grade won't be shown."}</span>`, "ok"); }
+    catch (err) { gradeSay(`<i class="ph ph-warning-circle"></i><span>${esc(err.message || "Couldn't save. Please try again.")}</span>`, "err"); }
+    setBusy(btn, false);
+  });
+
   /* Account: change display name */
   const nameForm = document.getElementById("name-form"), nameInput = document.getElementById("acct-name"), nameStatus = document.getElementById("name-status");
   const nameSay = (msg, kind) => { nameStatus.className = "form-status " + kind; nameStatus.innerHTML = msg; nameStatus.hidden = !msg; };
   nameInput.addEventListener("input", () => nameSay("", "info"));
   document.addEventListener("click", e => {          // fresh form every time the account window opens
-    if (e.target.closest('[data-open="account"]')) { nameSay("", "info"); if (B.user) nameInput.value = B.user.name || ""; }
+    if (e.target.closest('[data-open="account"]')) { nameSay("", "info"); gradeSay("", "info"); if (B.user) nameInput.value = B.user.name || ""; }
   }, true);
   nameForm.addEventListener("submit", async e => {
     e.preventDefault();
@@ -755,6 +787,8 @@
     });
     document.getElementById("account-title").textContent = user ? "Hi, " + user.name + "." : "";
     if (user && document.activeElement !== nameInput) nameInput.value = user.name || "";
+    const gSel = document.getElementById("acct-grade");
+    if (user && gSel && document.activeElement !== gSel) gSel.innerHTML = gradeOptions(user.grade || "");
   });
 
   /* Testimonials viewer */
